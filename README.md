@@ -1,6 +1,4 @@
-# 🚀 [Your Project Title Here]
-
-> ⚠️ **Replace everything in `[ ]` brackets with your actual content before submission.**
+# 🚀 Container Congestion Predictor & Port Operations Optimiser
 
 ---
 
@@ -8,36 +6,32 @@
 
 | Field | Value |
 |---|---|
-| **Team Name** | [Your Team Name] |
-| **Track** | [AI / DevOps / Sustainability / Open] |
-| **Team Lead** | [Name] — [email@ibm.com] |
-| **Members** | [Name 1], [Name 2], [Name 3] |
+| **Team Name** | Team |
+| **Track** | AI |
+| **Team Lead** | Khushal Vadher — 24it102@charusat.edu.in |
+| **Members** | Darshan Raval, Parth Patoliya, Jay Rohit |
 
 ---
 
 ## 🎯 Problem Statement
 
-> In 2–3 sentences: What problem does your project solve? Who experiences this problem?
-
-[Describe the real-world problem your project addresses. Be specific about who the user is and what pain point they face.]
+Ports face severe congestion due to inefficient manual allocation of berths and cranes, leading to delays, increased costs, and disrupted supply chains. Port operators lack real-time predictive insights to anticipate congestion and optimize resource utilization.
 
 ---
 
 ## 💡 Solution
 
-> In 2–3 sentences: What did you build? How does it solve the problem above?
-
-[Describe your solution clearly. Explain the core mechanism — what makes it work.]
+We built a lightweight AI-driven system that analyzes vessel schedules and port capacity data to predict congestion levels and optimize resource allocation. The system provides berth and crane assignments, suggests alternate routing strategies, and generates a 72-hour operational plan to support faster and smarter port decision-making.
 
 ---
 
 ## ✨ Key Features
 
-- **Feature 1:** [Brief description — e.g., "Real-time anomaly detection using watsonx.ai"]
-- **Feature 2:** [Brief description]
-- **Feature 3:** [Brief description]
-- **Feature 4:** [Optional]
-- **Feature 5:** [Optional]
+- **Congestion Prediction:** Predicts congestion level (High / Medium / Low) based on vessel inflow and port capacity
+- **Berth Allocation:** Automated berth allocation based on arrival time and vessel priority
+- **Crane Assignment:** Crane assignment based on vessel size for efficient cargo handling
+- **Alternate Routing:** Routing recommendations during high congestion periods
+- **72-Hour Planning:** Operational planning dashboard for port supervisors
 
 ---
 
@@ -45,11 +39,11 @@
 
 | Category | Technologies |
 |---|---|
-| **Languages** | [e.g., Python, TypeScript] |
-| **Frameworks** | [e.g., FastAPI, React] |
-| **IBM Technologies** | [e.g., watsonx.ai, IBM Bob, IBM Cloud] |
-| **Databases** | [e.g., PostgreSQL, Redis] |
-| **Other** | [e.g., Docker, GitHub Actions] |
+| **Languages** | Python, JavaScript |
+| **Frameworks** | FastAPI, React, Tailwind CSS |
+| **IBM Technologies** | None |
+| **Databases** | None |
+| **Other** | Git, Postman, Vite |
 
 ---
 
@@ -73,22 +67,22 @@
 
 ## ⚡ How to Run
 
-> **Copy these exact steps from your [`docs/setup-guide.md`](docs/setup-guide.md)**
+> See [`docs/setup-guide.md`](docs/setup-guide.md) for full setup instructions.
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/[your-repo].git
-cd [your-repo]
+git clone https://github.com/khushalvadher0-hash/bob-ai-hackathon-Team.git
+cd bob-ai-hackathon-Team
 
 # 2. Install dependencies
-[your install command here]
+pip install fastapi uvicorn
 
 # 3. Configure environment
-cp .env.example .env
+cp src/.env.example src/.env
 # Edit .env with your values
 
 # 4. Run the project
-[your run command here]
+python src/main.py
 ```
 
 ---
@@ -100,22 +94,20 @@ cp .env.example .env
 | 📹 Demo Video | [See demo/demo-video-link.txt](demo/demo-video-link.txt) |
 | 🌐 Live Demo | [See demo/live-demo-url.txt](demo/live-demo-url.txt) |
 | 🖼️ Screenshots | [See demo/screenshots/](demo/screenshots/) |
-| 📊 Presentation | [See presentation/slides.pdf](presentation/) |
+| 📊 Presentation | [See presentation/](presentation/) |
 
 ---
 
 ## ⚠️ Known Limitations
 
-> Be honest — judges appreciate transparency over overclaiming.
-
-- [Limitation 1: e.g., "Authentication is mocked — not production-ready"]
-- [Limitation 2: e.g., "Only tested on Chrome"]
-- [Limitation 3: e.g., "Feature X is scaffolded but not fully implemented"]
+- Uses simulated data and rule-based logic instead of real-time AIS data
+- Advanced ML models not yet integrated due to time constraints
+- Live tracking, weather integration, and dynamic optimization are planned for future versions
 
 ---
 
 ## 🏅 What We're Most Proud Of
 
-[Tell the judges what part of your submission is strongest and worth paying close attention to.]
+We are most proud of delivering a complete working prototype within a short time that demonstrates real-world impact. The system combines simple yet effective decision logic with a clean and intuitive UI, making complex port operations easy to understand and act upon.
 
 ---
