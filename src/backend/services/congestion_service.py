@@ -12,8 +12,15 @@ TERMINAL_METADATA = {
     "T4": {"name": "West River Feeder Terminal", "type": "Feeder", "berths": 2, "cranes": 4}
 }
 
+SEVERITY_RANK = {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 2,
+    "LOW": 3
+}
+
 def _clean_doc(doc: Dict[str, Any]) -> Dict[str, Any]:
-    """Removes MongoDB _id from returned document for JSON serialization."""
+    """Removes MongoDB internal _id from returned document for clean JSON serialization."""
     if doc and "_id" in doc:
         del doc["_id"]
     return doc
@@ -46,7 +53,7 @@ def predict_terminal_congestion(terminal_id: str) -> Optional[Dict[str, Any]]:
 
     if berths:
         avail_berths = len([b for b in berths if b.get("status") == "AVAILABLE" or b.get("available") is True])
-        avail_cranes = sum(int(b.get("crane_count", 2)) for b in berths if b.get("status") == "AVAILABLE")
+        avail_cranes = sum(int(b.get("crane_count", 2)) for b in berths if b.get("status") == "AVAILABLE" or b.get("available") is True)
         total_berths = len(berths)
         total_cranes = sum(int(b.get("crane_count", 2)) for b in berths)
     else:
@@ -96,7 +103,7 @@ def predict_terminal_congestion(terminal_id: str) -> Optional[Dict[str, Any]]:
         "crane_utilization": crane_utilization,
         "vessel_count": v_count,
         "container_count": c_count,
-        "features_used": prediction_result.get("features_used", features_payload)
+        "features": prediction_result.get("features_used", features_payload)
     }
 
     # 6. Save prediction in MongoDB congestion_predictions collection
@@ -114,14 +121,24 @@ def predict_terminal_congestion(terminal_id: str) -> Optional[Dict[str, Any]]:
 
 def get_congestion_predictions() -> List[Dict[str, Any]]:
     """
-    Returns real-time predictions for all port terminals.
-    Ensures predictions are always fresh and derived from current operational states.
+    Returns real-time predictions for all port terminals, sorted by severity order:
+    CRITICAL -> HIGH -> MEDIUM -> LOW, with secondary sort by probability descending.
     """
     predictions = []
     for t_id in VALID_TERMINALS:
         pred = predict_terminal_congestion(t_id)
         if pred:
             predictions.append(pred)
+
+    # Sort terminals by severity rank (CRITICAL first), then probability descending
+    predictions.sort(
+        key=lambda x: (
+            SEVERITY_RANK.get(x.get("congestion_level", "LOW"), 3),
+            -float(x.get("probability", 0.0)),
+            -float(x.get("expected_wait_hours", 0.0))
+        )
+    )
+
     return predictions
 
 def get_terminal_congestion(terminal_id: str) -> Optional[Dict[str, Any]]:
