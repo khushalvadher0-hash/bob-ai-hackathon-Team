@@ -13,7 +13,7 @@ const client = axios.create({
 export const getVessels = async () => {
   const res = await client.get('/api/vessels');
   if (Array.isArray(res.data)) {
-    return res.data;
+    return Array.isArray(res.data) ? res.data : (res.data.vessels || []);
   }
   if (res.data && Array.isArray(res.data.vessels)) {
     return res.data.vessels;
@@ -32,16 +32,7 @@ export const getVessel = getVesselById;
 // Normalized helper to handle array or { count, predictions: [] }
 export const getCongestion = async () => {
   const res = await client.get('/api/congestion');
-  if (Array.isArray(res.data)) {
-    return res.data;
-  }
-  if (res.data && Array.isArray(res.data.predictions)) {
-    return res.data.predictions;
-  }
-  if (res.data && Array.isArray(res.data.terminals)) {
-    return res.data.terminals;
-  }
-  return [];
+  return res.data;
 };
 
 export const getTerminalCongestion = async (terminalId) => {
