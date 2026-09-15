@@ -83,57 +83,44 @@ export default function Vessels() {
     navigate(`/routing?vesselId=${vesselId}`);
   };
 
-  const toggleSort = (field) => {
-    if (sortBy === field) {
-      setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortOrder('asc');
-    }
-  };
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Ship size={24} color="var(--color-primary)" />
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+            <Ship size={22} color="var(--color-primary)" />
             Vessel Fleet Directory
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-            Real-time fleet roster, cargo capacity, priority rating, and terminal assignments.
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '2px' }}>
+            Real-time fleet roster, cargo workload, priority rating, and assigned terminal berths.
           </p>
         </div>
 
         <button
           className="btn"
           onClick={loadVessels}
-          style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid var(--border-color)',
-            color: 'var(--text-secondary)'
-          }}
+          style={{ fontSize: '0.78rem', padding: '6px 12px' }}
         >
-          <RefreshCw size={14} />
+          <RefreshCw size={13} />
           <span>Refresh Fleet</span>
         </button>
       </div>
 
       {/* Filter and Search Toolbar */}
-      <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
+      <div className="glass-panel" style={{ padding: '14px 18px', display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
         {/* Search input */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          background: 'rgba(0,0,0,0.25)',
+          backgroundColor: '#f8fafc',
           border: '1px solid var(--border-color)',
-          padding: '8px 14px',
+          padding: '6px 12px',
           borderRadius: 'var(--radius-md)',
           flex: '1 1 200px'
         }}>
-          <Search size={16} color="var(--text-secondary)" />
+          <Search size={14} color="var(--text-secondary)" />
           <input
             type="text"
             placeholder="Search by ID, Name, or Terminal..."
@@ -143,50 +130,66 @@ export default function Vessels() {
               background: 'transparent',
               border: 'none',
               outline: 'none',
-              color: '#fff',
-              fontSize: '0.85rem',
+              color: 'var(--text-primary)',
+              fontSize: '0.8rem',
               width: '100%'
             }}
           />
         </div>
 
         {/* Priority Filter */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Priority:</span>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          backgroundColor: '#ffffff',
+          border: '1px solid var(--border-color)',
+          padding: '5px 10px',
+          borderRadius: 'var(--radius-md)'
+        }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Priority:</span>
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
             style={{
-              background: '#111e38',
-              border: '1px solid var(--border-color)',
-              color: '#fff',
-              padding: '6px 12px',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '0.85rem',
-              outline: 'none'
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              color: 'var(--text-primary)',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer'
             }}
           >
             <option value="ALL">All Priorities</option>
-            <option value="HIGH">HIGH</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="LOW">LOW</option>
+            <option value="HIGH">HIGH Priority</option>
+            <option value="MEDIUM">MEDIUM Priority</option>
+            <option value="LOW">LOW Priority</option>
           </select>
         </div>
 
         {/* Terminal Filter */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Terminal:</span>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          backgroundColor: '#ffffff',
+          border: '1px solid var(--border-color)',
+          padding: '5px 10px',
+          borderRadius: 'var(--radius-md)'
+        }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Terminal:</span>
           <select
             value={terminalFilter}
             onChange={(e) => setTerminalFilter(e.target.value)}
             style={{
-              background: '#111e38',
-              border: '1px solid var(--border-color)',
-              color: '#fff',
-              padding: '6px 12px',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '0.85rem',
-              outline: 'none'
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              color: 'var(--text-primary)',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer'
             }}
           >
             <option value="ALL">All Terminals</option>
@@ -195,77 +198,24 @@ export default function Vessels() {
             ))}
           </select>
         </div>
-
-        {/* Status Filter */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Status:</span>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={{
-              background: '#111e38',
-              border: '1px solid var(--border-color)',
-              color: '#fff',
-              padding: '6px 12px',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '0.85rem',
-              outline: 'none'
-            }}
-          >
-            <option value="ALL">All Statuses</option>
-            {availableStatuses.map(s => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Sorting selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
-          <ArrowUpDown size={14} color="var(--text-muted)" />
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Sort by:</span>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            style={{
-              background: '#111e38',
-              border: '1px solid var(--border-color)',
-              color: '#fff',
-              padding: '6px 12px',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '0.85rem',
-              outline: 'none'
-            }}
-          >
-            <option value="vessel_id">Vessel ID</option>
-            <option value="vessel_name">Vessel Name</option>
-            <option value="container_count">Containers (TEU)</option>
-            <option value="priority">Priority</option>
-            <option value="arrival_time">Arrival Time</option>
-          </select>
-        </div>
       </div>
 
-      {/* Main Table or Loading/Error State */}
-      {loading ? (
-        <LoadingSpinner message="Retrieving Vessel Fleet Manifest..." />
-      ) : error ? (
-        <div className="glass-panel" style={{ padding: '32px', textAlign: 'center' }}>
-          <AlertTriangle size={32} color="var(--status-critical)" style={{ marginBottom: '12px' }} />
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '16px' }}>{error}</p>
-          <button className="btn btn-primary" onClick={loadVessels}>Retry</button>
-        </div>
-      ) : filteredVessels.length === 0 ? (
-        <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-          <p>No vessels matching the selected filters or search query.</p>
-        </div>
-      ) : (
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <div style={{ marginBottom: '12px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            Showing {filteredVessels.length} of {vessels.length} vessels
+      {/* Main Table */}
+      <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
+        {error ? (
+          <div style={{ padding: '32px', textAlign: 'center' }}>
+            <AlertTriangle size={32} color="var(--status-critical)" style={{ marginBottom: '10px' }} />
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '14px', fontSize: '0.85rem' }}>{error}</p>
+            <button className="btn btn-primary" onClick={loadVessels}>Retry</button>
           </div>
+        ) : filteredVessels.length === 0 ? (
+          <div style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '0.85rem' }}>No vessels match the specified filters.</p>
+          </div>
+        ) : (
           <VesselTable vessels={filteredVessels} onSelectVessel={handleSelectVessel} />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
