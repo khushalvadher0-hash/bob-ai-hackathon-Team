@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Union
 
 class Vessel(BaseModel):
     vessel_id: str
@@ -12,8 +12,8 @@ class Vessel(BaseModel):
     departure_deadline: Optional[str] = None
     container_count: int = 0
     vessel_size: str = Field(default="Large")
-    priority: str = Field(default="MEDIUM")  # LOW, MEDIUM, HIGH
-    status: str = Field(default="Scheduled")   # Approaching, Queued, Scheduled, Berthed
+    priority: Union[int, str] = Field(default="MEDIUM")  # 1, 2, 3 or LOW, MEDIUM, HIGH
+    status: str = Field(default="Scheduled")   # Approaching, Queued, Scheduled, Berthed, WAITING
     origin: Optional[str] = None
     destination: Optional[str] = None
     current_port: Optional[str] = None
