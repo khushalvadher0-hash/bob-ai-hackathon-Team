@@ -7,6 +7,7 @@ from .api.vessel_routes import router as vessel_router
 from .api.congestion_routes import router as congestion_router
 from .api.routing_routes import router as routing_router
 from .api.operations_routes import router as operations_router
+from .api.auth_routes import router as auth_router
 from .services.prediction_service import get_dashboard_summary_data
 from .database.database import check_connection, initialize_database
 
@@ -38,6 +39,7 @@ app.add_middleware(
 )
 
 # Include Routers
+app.include_router(auth_router)
 app.include_router(vessel_router)
 app.include_router(congestion_router)
 app.include_router(routing_router)
