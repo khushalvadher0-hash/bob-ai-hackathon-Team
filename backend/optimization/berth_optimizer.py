@@ -77,13 +77,52 @@ def calculate_berth_score(
     """
     Compatibility helper: Returns composite score based on ML berth preference probability.
     """
-    t_id = berth.get("terminal_id", "T1")
-    ml_res = predict_preferred_berth(vessel, target_terminal=t_id)
-    confidence = ml_res.get("confidence", 0.85)
-    b_id = berth.get("berth_id")
-    prob = ml_res.get("probabilities", {}).get(b_id, confidence)
-    return round(float(prob), 3), {"ml_confidence": confidence, "berth_prob": prob}
+    # 1. Availability (35%)
+    raw_status = str(berth.get("status", "AVAILABLE")).upper()
+    avail_score = 1.0 if raw_status == "AVAILABLE" else 0.5
 
+<<<<<<< HEAD
+=======
+    # 2. Waiting-Time Score (30%)
+    wait_seconds = max(0.0, (berth_free_time - vessel_arrival_time).total_seconds())
+    wait_hours = wait_seconds / 3600.0
+    # Normalize: 0 hours wait = 1.0; 24+ hours wait = 0.0
+    wait_score = max(0.0, min(1.0, 1.0 - (wait_hours / 24.0)))
+
+    # 3. Fit Score (20%)
+    v_size = str(vessel.get("vessel_size", "Large")).upper().strip()
+    b_max_size = str(berth.get("max_vessel_size", "Large")).upper().strip()
+    v_rank = SIZE_RANKS.get(v_size, 3)
+    b_rank = SIZE_RANKS.get(b_max_size, 3)
+    # Exact size match gives highest score (efficient resource use)
+    size_diff = abs(b_rank - v_rank)
+    fit_score = max(0.4, 1.0 - (size_diff * 0.25))
+
+    # 4. Terminal Suitability Score (15%)
+    b_terminal = str(berth.get("terminal_id", "")).upper().strip()
+    target_clean = str(target_terminal).upper().strip()
+    if b_terminal == target_clean:
+        terminal_score = 1.0
+    else:
+        terminal_score = 0.50 # Penalty for cross-terminal assignment
+
+    composite_score = (
+        WEIGHT_AVAILABILITY * avail_score +
+        WEIGHT_WAITING * wait_score +
+        WEIGHT_FIT * fit_score +
+        WEIGHT_TERMINAL * terminal_score
+    )
+
+    breakdown = {
+        "availability_score": round(avail_score, 3),
+        "waiting_score": round(wait_score, 3),
+        "fit_score": round(fit_score, 3),
+        "terminal_score": round(terminal_score, 3)
+    }
+
+    return round(composite_score, 3), breakdown
+
+>>>>>>> 12a37443dd3d2e84a104cf1c809c9028acc9d570
 def assign_best_berth(
     vessel: Dict[str, Any],
     berths: List[Dict[str, Any]],
@@ -94,9 +133,18 @@ def assign_best_berth(
     Rules:
       1. Filter by vessel size compatibility & berth status
       2. Score each berth:
+<<<<<<< HEAD
          cost_score = (earliest_available_wait * 0.5) + (crane_count * -0.3) + (capacity_fit * -0.2)
       3. Pick candidate with lowest cost score
     """
+=======
+         score = (earliest_available_wait * 0.5) + (crane_count * -0.3) + (capacity_fit * -0.2)
+      3. Pick lowest score (best option)
+    """
+    if not berths:
+        return None
+
+>>>>>>> 12a37443dd3d2e84a104cf1c809c9028acc9d570
     if berth_available_times is None:
         berth_available_times = {}
 
@@ -173,6 +221,20 @@ def find_best_berth(
     if best and best.get("berth"):
         return best["berth"]
 
+<<<<<<< HEAD
+=======
+    t_id = berth.get("terminal_id", "T1")
+    ml_res = predict_preferred_berth(vessel, target_terminal=t_id)
+    confidence = ml_res.get("confidence", 0.85)
+    b_id = berth.get("berth_id")
+    prob = ml_res.get("probabilities", {}).get(b_id, confidence)
+    return round(float(prob), 3), {"ml_confidence": confidence, "berth_prob": prob}
+
+def find_best_berth(vessel: Dict[str, Any], berths: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Compatibility helper: Returns top ML-predicted feasible berth for a vessel.
+    """
+>>>>>>> 12a37443dd3d2e84a104cf1c809c9028acc9d570
     t_id = vessel.get("recommended_terminal") or vessel.get("current_terminal") or "T1"
     ml_res = predict_preferred_berth(vessel, target_terminal=t_id)
     ranked = ml_res.get("ranked_berths", [])
@@ -183,7 +245,11 @@ def find_best_berth(
             feasible, _ = check_berth_feasibility(vessel, berth_map[b_id])
             if feasible:
                 return berth_map[b_id]
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 12a37443dd3d2e84a104cf1c809c9028acc9d570
     return berths[0] if berths else {}
 
 def optimize_berth_assignments(

@@ -49,6 +49,7 @@ def calculate_required_crane_count(
     max_berth_cranes: int = 4
 ) -> int:
     """
+<<<<<<< HEAD
     Computes required number of cranes based on container volume, priority, and ML model.
     """
     try:
@@ -77,6 +78,26 @@ def allocate_cranes(vessel: Dict[str, Any], berth: Dict[str, Any]) -> int:
         pass
     return assign_cranes(vessel, berth).get("cranes", 2)
 
+=======
+    Computes required number of cranes based on container volume and vessel priority.
+    """
+    vessel_mock = {"container_count": container_count}
+    berth_mock = {"crane_count": max_berth_cranes}
+    res = assign_cranes(vessel_mock, berth_mock)
+    return res["cranes"]
+
+    """Compatibility helper using ML crane requirement prediction."""
+    res = predict_crane_requirement(
+        vessel={"container_count": container_count, "priority": priority},
+        berth={"crane_count": max_berth_cranes}
+    )
+    return res.get("predicted_crane_count", 2)
+
+def allocate_cranes(vessel: Dict[str, Any], berth: Dict[str, Any]) -> int:
+    """Compatibility helper: Returns ML-predicted crane count for a vessel & berth pair."""
+    res = predict_crane_requirement(vessel=vessel, berth=berth)
+    return res.get("predicted_crane_count", 2)
+>>>>>>> 12a37443dd3d2e84a104cf1c809c9028acc9d570
 
 def calculate_handling_time_hours(
     container_count: int,
