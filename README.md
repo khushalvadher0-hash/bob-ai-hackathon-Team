@@ -8,15 +8,11 @@
 
 | Field | Value |
 |---|---|
-| **Team Name** | [Your Team Name] |
-| **Track** | [AI / DevOps / Sustainability / Open] |
-| **Team Lead** | [Kushal Vadhel] — [email@ibm.com] |
-| **Members** | [Darshan Raval], [Parth Patoliya], [Jay Rohit] |
-=======
 | **Team Name** | Team |
 | **Track** | AI |
 | **Team Lead** | Khushal Vadher — 24it102@charusat.edu.in |
 | **Members** | Darshan Raval, Parth Patoliya, Jay Rohit |
+
 ---
 
 ## 🎯 Problem Statement
