@@ -1,5 +1,7 @@
 # 🚀 Container Congestion Predictor & Port Operations Optimiser
 
+>  **The 2021 LA/Long Beach port backlog had 100+ ships waiting offshore for weeks, costing global supply chains $10B+. Port operators allocate berths, cranes, and yard space across hundreds of vessels manually in spreadsheets. Congestion hotspots are identified reactively — after vessels are already queuing — and alternate routing decisions come too late to help.**
+
 ---
 
 ## 👥 Team
