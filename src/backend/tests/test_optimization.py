@@ -7,7 +7,13 @@ from ..optimization.berth_optimizer import (
     calculate_berth_score,
     estimate_service_duration_hours
 )
-from ..optimization.crane_optimizer import allocate_cranes
+from ..optimization.crane_optimizer import (
+    allocate_cranes,
+    calculate_required_crane_count,
+    calculate_handling_time_hours,
+    optimize_crane_allocations,
+    get_terminal_cranes_inventory
+)
 from ..planner.planner_72h import generate_72h_operations_plan
 
 def test_check_berth_feasibility():
@@ -78,23 +84,49 @@ def test_optimize_berth_assignments_no_overlap():
     v2_start = datetime.fromisoformat(v2_op["start_time"])
     assert v2_start >= v1_end
 
-def test_allocate_cranes():
-    vessel_high = {"container_count": 2000, "priority": "HIGH"}
-    berth = {"crane_count": 4}
-    cranes = allocate_cranes(vessel_high, berth)
-    assert cranes == 4
+def test_crane_optimization():
+    # Required crane calculation
+    assert calculate_required_crane_count(2000, "HIGH", 4) == 4
+    assert calculate_required_crane_count(1200, "MEDIUM", 4) == 3
+    assert calculate_required_crane_count(600, "LOW", 4) == 2
 
-def test_scheduler_and_planner():
+    # Handling time calculation: 1400 TEU / (2 cranes * 35) = 20.0h
+    assert calculate_handling_time_hours(1400, 2) == 20.0
+
+    # Non-overlapping crane asset allocations
+    berth_schedule = [
+        {"vessel_id": "V1", "vessel_name": "Ship 1", "terminal_id": "T1", "berth_id": "B01", "start_time": "2026-09-15T06:00:00", "end_time": "2026-09-15T12:00:00", "container_count": 1000, "priority": "HIGH"},
+        {"vessel_id": "V2", "vessel_name": "Ship 2", "terminal_id": "T1", "berth_id": "B01", "start_time": "2026-09-15T12:30:00", "end_time": "2026-09-15T18:30:00", "container_count": 1000, "priority": "HIGH"}
+    ]
+    berths = [
+        {"berth_id": "B01", "terminal_id": "T1", "crane_count": 2, "status": "AVAILABLE"}
+    ]
+
+    allocations = optimize_crane_allocations(berth_schedule, berths)
+    assert len(allocations) == 2
+    assert allocations[0]["crane_count"] == 2
+    assert len(allocations[0]["crane_ids"]) == 2
+    assert allocations[0]["status"] == "ASSIGNED"
+
+def test_master_72h_planner():
     vessels = [
-        {"vessel_id": "V1", "vessel_name": "Ship A", "priority": "HIGH", "arrival_time": "2026-09-15T06:00:00", "container_count": 1000, "current_terminal": "T1"},
-        {"vessel_id": "V2", "vessel_name": "Ship B", "priority": "LOW", "arrival_time": "2026-09-15T08:00:00", "container_count": 800, "current_terminal": "T1"}
+        {"vessel_id": "V1", "vessel_name": "Ship A", "priority": "HIGH", "arrival_time": "2026-09-15T06:00:00", "container_count": 1000, "current_terminal": "T1", "vessel_size": "Large"},
+        {"vessel_id": "V2", "vessel_name": "Ship B", "priority": "LOW", "arrival_time": "2026-09-15T08:00:00", "container_count": 800, "current_terminal": "T1", "vessel_size": "Large"}
     ]
     berths = [
         {"berth_id": "B01", "terminal_id": "T1", "max_vessel_size": "Ultra Large", "status": "AVAILABLE", "crane_count": 3, "available_from": "2026-09-15T06:00:00"}
     ]
-    cong_map = {"T1": {"level": "LOW", "predicted_wait_hours": 1.0}}
+    cong_map = {
+        "T1": {"terminal_id": "T1", "terminal_name": "North Deepwater Terminal", "congestion_level": "LOW", "probability": 0.2, "predicted_wait_hours": 1.0, "available_berths": 1, "available_cranes": 3}
+    }
 
     plan = generate_72h_operations_plan(vessels, berths, cong_map)
     assert plan["planning_horizon_hours"] == 72
-    assert len(plan["schedule"]) == 2
+    assert plan["total_vessels"] == 2
+    assert plan["scheduled_vessels"] == 2
+    assert len(plan["operations"]) == 2
     assert plan["total_containers_handled"] == 1800
+    assert plan["average_cranes_per_vessel"] > 0
+    assert "planning_window" in plan
+    assert "start" in plan["planning_window"]
+    assert "end" in plan["planning_window"]

@@ -1,11 +1,13 @@
 from typing import List, Dict, Any, Optional
 from pathlib import Path
+from datetime import datetime
 import pandas as pd
 from ..database.database import get_database
 from .vessel_service import get_all_vessels, get_vessel_by_id
 from .congestion_service import get_terminal_congestion_status
 from .routing_service import get_all_routing_recommendations_service
 from ..optimization.berth_optimizer import optimize_berth_assignments
+from ..optimization.crane_optimizer import optimize_crane_allocations, get_terminal_cranes_inventory
 from ..planner.planner_72h import generate_72h_operations_plan
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -88,8 +90,28 @@ def get_vessel_berth_assignment_service(vessel_id: str) -> Optional[Dict[str, An
     return None
 
 def get_cranes_data() -> List[Dict[str, Any]]:
-    """Generates crane asset list based on berths collection."""
+    """
+    Returns actual optimized crane allocation results across scheduled operations.
+    Fallback to static crane assets catalog if no vessels are scheduled.
+    """
+    vessels = get_all_vessels()
     berths = get_berths_data()
+    congestion_predictions = get_terminal_congestion_status()
+
+    # Get berth schedule
+    berth_opt = get_optimized_berths_service()
+    berth_schedule = berth_opt.get("schedule", [])
+
+    if berth_schedule:
+        # Optimize and return actual vessel-to-crane allocations
+        allocations = optimize_crane_allocations(
+            berth_schedule=berth_schedule,
+            berths=berths,
+            congestion_predictions=congestion_predictions
+        )
+        return allocations
+
+    # Fallback to physical crane inventory catalog
     cranes = []
     for b in berths:
         crane_count = b.get("crane_count", 2)
@@ -109,7 +131,9 @@ def get_cranes_data() -> List[Dict[str, Any]]:
 
 def get_72h_plan_service() -> Dict[str, Any]:
     """
-    Computes rolling 72-hour operational plan and persists assignments.
+    Computes complete 72-hour master operational plan integrating real vessel data,
+    ML congestion predictions, alternate routing advice, berth optimization, and crane allocation.
+    Persists master plan into MongoDB 'operations' collection.
     """
     vessels = get_all_vessels()
     berths = get_berths_data()
@@ -117,6 +141,38 @@ def get_72h_plan_service() -> Dict[str, Any]:
     cong_map = {t["terminal_id"]: t for t in terminals}
 
     plan = generate_72h_operations_plan(vessels, berths, cong_map)
+
+    # Persist the full 72h operational plan into MongoDB
+    try:
+        db = get_database()
+        for item in plan.get("operations", []):
+            op_doc = {
+                "vessel_id": item.get("vessel_id"),
+                "vessel_name": item.get("vessel_name"),
+                "terminal_id": item.get("terminal_id"),
+                "berth_id": item.get("berth_id"),
+                "berth_name": item.get("berth_name"),
+                "crane_ids": item.get("crane_ids", []),
+                "crane_count": item.get("crane_count", 2),
+                "cranes": item.get("cranes", 2),
+                "start_time": item.get("start_time"),
+                "end_time": item.get("end_time"),
+                "duration_hours": item.get("duration_hours"),
+                "estimated_wait_hours": item.get("estimated_wait_hours"),
+                "estimated_handling_hours": item.get("estimated_handling_hours"),
+                "action": item.get("action", "Discharge & Load Containers"),
+                "status": item.get("status", "SCHEDULED"),
+                "priority": item.get("priority", "MEDIUM"),
+                "created_at": datetime.now().isoformat()
+            }
+            db.operations.update_one(
+                {"vessel_id": item.get("vessel_id")},
+                {"$set": op_doc},
+                upsert=True
+            )
+    except Exception as e:
+        print(f"Notice: operational plan MongoDB persistence ({e})")
+
     return plan
 
 def save_operation(operation_data: Dict[str, Any]) -> Dict[str, Any]:
