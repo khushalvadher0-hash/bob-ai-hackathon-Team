@@ -1,6 +1,6 @@
-# 🚀 [Your Project Title Here]
+# 🚀 Container Congestion Predictor & Port Operations Optimiser
 
-> ⚠️ **Replace everything in `[ ]` brackets with your actual content before submission.**
+> Intelligent port congestion forecasting, alternative berth routing, and 72-hour operational planning platform.
 
 ---
 
@@ -8,36 +8,32 @@
 
 | Field | Value |
 |---|---|
-| **Team Name** | [Your Team Name] |
-| **Track** | [AI / DevOps / Sustainability / Open] |
-| **Team Lead** | [Name] — [email@ibm.com] |
-| **Members** | [Name 1], [Name 2], [Name 3] |
+| **Team Name** | Team |
+| **Track** | AI |
+| **Team Lead** | Khushal Vadher — 24it102@charusat.edu.in |
+| **Members** | Darshan Raval (24it084@charusat.edu.in), Parth Patoliya (24it081@charusat.edu.in), Jay Rohit (24it085@charusat.edu.in) |
 
 ---
 
 ## 🎯 Problem Statement
 
-> In 2–3 sentences: What problem does your project solve? Who experiences this problem?
-
-[Describe the real-world problem your project addresses. Be specific about who the user is and what pain point they face.]
+Ports face severe bottleneck congestion due to uncoordinated vessel arrivals, draft constraints, and inefficient manual allocation of berths and cranes, resulting in prolonged vessel turnaround times, supply chain disruptions, and high demurrage costs. Port shift supervisors lack real-time predictive foresight to anticipate queue build-ups and automate resource-balanced operational schedules.
 
 ---
 
 ## 💡 Solution
 
-> In 2–3 sentences: What did you build? How does it solve the problem above?
-
-[Describe your solution clearly. Explain the core mechanism — what makes it work.]
+We built a modular, explainable AI and optimization decision-support platform that forecasts terminal congestion levels via a Random Forest machine learning classifier, computes dynamic multi-criteria rerouting recommendations for incoming vessels, and executes priority-aware greedy scheduling to generate non-overlapping berth and crane assignments over a rolling 72-hour operational planning horizon.
 
 ---
 
 ## ✨ Key Features
 
-- **Feature 1:** [Brief description — e.g., "Real-time anomaly detection using watsonx.ai"]
-- **Feature 2:** [Brief description]
-- **Feature 3:** [Brief description]
-- **Feature 4:** [Optional]
-- **Feature 5:** [Optional]
+- **ML Congestion Forecasting:** Predicts terminal congestion levels (LOW, MEDIUM, HIGH, CRITICAL) and probabilities using explainable Random Forest modeling.
+- **Dynamic Alternate Routing:** Calculates multi-factor composite route scores (congestion penalty, wait times, distance, capacity) to suggest optimal terminal diversions.
+- **Automated Berth & Crane Optimization:** Priority-aware, non-overlapping greedy scheduling engine allocating draft-compatible berths and 1–4 quay cranes per vessel.
+- **72-Hour Master Operations Timeline:** Interactive operations control center dashboard providing shift supervisors with real-time visibility into planned vessel turnarounds.
+- **Explainable Operations Dashboard:** Built with React, Vite, and Recharts featuring dark-navy glassmorphism UI for clear command-center decision making.
 
 ---
 
@@ -45,18 +41,19 @@
 
 | Category | Technologies |
 |---|---|
-| **Languages** | [e.g., Python, TypeScript] |
-| **Frameworks** | [e.g., FastAPI, React] |
-| **IBM Technologies** | [e.g., watsonx.ai, IBM Bob, IBM Cloud] |
-| **Databases** | [e.g., PostgreSQL, Redis] |
-| **Other** | [e.g., Docker, GitHub Actions] |
+| **Languages** | Python 3.11+, JavaScript (ES6+ / JSX) |
+| **Frameworks** | FastAPI, React 18, Vite |
+| **ML & Analytics** | scikit-learn (Random Forest), pandas, NumPy, joblib |
+| **Databases** | SQLite (with relational seed migrations) |
+| **Styling & Visualization** | Vanilla Glassmorphic CSS, Recharts, Lucide React, Leaflet |
+| **Testing & Tooling** | pytest, httpx, Git |
 
 ---
 
 ## 📂 Repository Structure
 ```
 ├── backend/
-│   ├── api/             # FastAPI REST endpoints
+│   ├── api/             # FastAPI REST endpoints (/api/vessels, /api/congestion, /api/routes, /api/operations)
 │   ├── models/          # Pydantic data schemas
 │   ├── services/        # Decoupled business logic
 │   ├── ml/              # Preprocessing, feature engineering & model training
@@ -85,22 +82,25 @@
 
 ## 🚀 Getting Started
 
-> **Copy these exact steps from your [`docs/setup-guide.md`](docs/setup-guide.md)**
-
 ```bash
 # 1. Clone the repo
-git clone https://github.com/[your-repo].git
-cd [your-repo]
+git clone https://github.com/khushalvadher0-hash/bob-ai-hackathon-Team.git
+cd bob-ai-hackathon-Team
 
-# 2. Install dependencies
-[your install command here]
+# 2. Install dependencies & train model
+pip install -r backend/requirements.txt
+python -m backend.ml.train_model
 
 # 3. Configure environment
-cp .env.example .env
-# Edit .env with your values
+cp backend/.env.example backend/.env
 
-# 4. Run the project
-[your run command here]
+# 4. Run the Backend API
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+
+# 5. Run the Frontend (in a separate terminal)
+cd frontend
+npm install
+npm run dev
 ```
 
 ---
@@ -112,22 +112,20 @@ cp .env.example .env
 | 📹 Demo Video | [See demo/demo-video-link.txt](demo/demo-video-link.txt) |
 | 🌐 Live Demo | [See demo/live-demo-url.txt](demo/live-demo-url.txt) |
 | 🖼️ Screenshots | [See demo/screenshots/](demo/screenshots/) |
-| 📊 Presentation | [See presentation/slides.pdf](presentation/) |
+| 📊 Presentation | [See presentation/](presentation/) |
 
 ---
 
 ## ⚠️ Known Limitations
 
-> Be honest — judges appreciate transparency over overclaiming.
-
-- [Limitation 1: e.g., "Authentication is mocked — not production-ready"]
-- [Limitation 2: e.g., "Only tested on Chrome"]
-- [Limitation 3: e.g., "Feature X is scaffolded but not fully implemented"]
+- **Simulated Port Telemetry:** The initial release uses synthetic vessel manifest and historical terminal congestion CSV datasets rather than live AIS telemetry streams.
+- **Deterministic Routing Heuristic:** Uses rule-based weighted multi-criteria scoring rather than multi-commodity integer flow optimization.
+- **Single Port Operations:** Scoped to Port Metro's 4 internal terminals and 11 berths; multi-port regional coordination is planned for subsequent iterations.
 
 ---
 
 ## 🏅 What We're Most Proud Of
 
-[Tell the judges what part of your submission is strongest and worth paying close attention to.]
+We are most proud of building a fully integrated, modular decision-support system in record time that bridges explainable machine learning predictions with deterministic resource scheduling. Shift supervisors can immediately understand *why* a terminal is congested, review alternate routing suggestions, and inspect a conflict-free 72-hour operational timeline on a glassmorphic dashboard.
 
 ---
