@@ -85,7 +85,7 @@ Service Layer (vessel, congestion, routing, operations)
 ```
 ├── src/                  # All source code
 ├── backend/
-│   ├── api/             # FastAPI REST endpoints
+│   ├── api/             # FastAPI REST endpoints (/api/vessels, /api/congestion, /api/routes, /api/operations)
 │   ├── models/          # Pydantic data schemas
 │   ├── services/        # Decoupled business logic
 │   ├── ml/              # Preprocessing, feature engineering & model training
