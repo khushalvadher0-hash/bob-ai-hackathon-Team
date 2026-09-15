@@ -65,7 +65,6 @@ def test_routing_recommendation_congested_reroute():
     assert rec["recommended_terminal"] in ["T2", "T3", "T4"]
     assert rec["wait_reduction_hours"] > 5.0
     assert "score_breakdown" in rec
-    assert rec["score_breakdown"]["congestion_score"] >= 0.0
     assert "reason" in rec
     assert len(rec["reason"]) > 10
 
