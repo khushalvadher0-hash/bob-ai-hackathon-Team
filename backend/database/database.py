@@ -12,6 +12,7 @@ if ENV_PATH.exists():
     load_dotenv(dotenv_path=ENV_PATH)
 load_dotenv()
 
+
 MONGODB_URI: str = os.getenv(
     "MONGODB_URI",
     "mongodb+srv://Darshan:MOVIE...@cluster0.h2a5qe7.mongodb.net/?retryWrites=true&w=majority"
