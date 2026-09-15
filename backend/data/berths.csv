@@ -1,0 +1,12 @@
+berth_id,terminal_id,terminal_name,capacity,max_vessel_size,crane_count,available_from,status
+B01,T1,North Terminal Deepwater,2500,Ultra Large,4,2026-09-15T06:00:00,OCCUPIED
+B02,T1,North Terminal Deepwater,2200,Ultra Large,3,2026-09-15T08:00:00,OCCUPIED
+B03,T1,North Terminal General,1800,Large,3,2026-09-15T12:00:00,AVAILABLE
+B04,T2,East Pier Container,2000,Large,3,2026-09-15T06:00:00,AVAILABLE
+B05,T2,East Pier Container,1800,Large,2,2026-09-15T14:00:00,AVAILABLE
+B06,T2,East Pier Feeder,1200,Medium,2,2026-09-15T06:00:00,AVAILABLE
+B07,T3,South Gateway Terminal,2200,Ultra Large,4,2026-09-15T06:00:00,AVAILABLE
+B08,T3,South Gateway Terminal,1700,Large,3,2026-09-15T09:00:00,AVAILABLE
+B09,T3,South Gateway Feeder,1300,Medium,2,2026-09-15T06:00:00,AVAILABLE
+B10,T4,West River Berth,1100,Feeder,2,2026-09-15T06:00:00,AVAILABLE
+B11,T4,West River Berth,1000,Feeder,1,2026-09-15T07:00:00,AVAILABLE

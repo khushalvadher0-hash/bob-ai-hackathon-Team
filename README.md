@@ -1,121 +1,123 @@
-# 🚀 [Your Project Title Here]
+# Container Congestion Predictor & Port Operations Optimiser
 
-> ⚠️ **Replace everything in `[ ]` brackets with your actual content before submission.**
+[![Status](https://img.shields.io/badge/Status-Demo--Ready-success.svg)]()
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg)]()
+[![React](https://img.shields.io/badge/React-18-61DAFB.svg)]()
+[![scikit--learn](https://img.shields.io/badge/scikit--learn-1.6-F7931E.svg)]()
 
----
+## 📌 Problem Statement
+Modern global container ports face severe bottleneck congestion resulting from clustered vessel arrival schedules, limited deepwater berths, and unbalanced terminal utilization. Port shift supervisors lack centralized predictive intelligence to foresee queue build-ups and automate resource-balanced 72-hour operational schedules.
 
-## 👥 Team
-
-| Field | Value |
-|---|---|
-| **Team Name** | [Your Team Name] |
-| **Track** | [AI / DevOps / Sustainability / Open] |
-| **Team Lead** | [Name] — [email@ibm.com] |
-| **Members** | [Name 1], [Name 2], [Name 3] |
-
----
-
-## 🎯 Problem Statement
-
-> In 2–3 sentences: What problem does your project solve? Who experiences this problem?
-
-[Describe the real-world problem your project addresses. Be specific about who the user is and what pain point they face.]
+## 🚀 Solution Overview
+The **Container Congestion Predictor & Port Operations Optimiser** is an end-to-end decision support platform that:
+1. **Predicts Congestion Risk**: Uses an explainable Random Forest ML model to classify terminal congestion (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
+2. **Recommends Alternate Routing**: Calculates dynamic composite route penalties to divert vessels to underutilized berths before queues form.
+3. **Optimizes Berth & Crane Allocations**: Runs a priority-aware greedy scheduling engine to allocate berths and cranes without temporal overlap.
+4. **Generates 72-Hour Operations Plans**: Delivers actionable shift schedules for port superintendents.
 
 ---
 
-## 💡 Solution
-
-> In 2–3 sentences: What did you build? How does it solve the problem above?
-
-[Describe your solution clearly. Explain the core mechanism — what makes it work.]
-
----
-
-## ✨ Key Features
-
-- **Feature 1:** [Brief description — e.g., "Real-time anomaly detection using watsonx.ai"]
-- **Feature 2:** [Brief description]
-- **Feature 3:** [Brief description]
-- **Feature 4:** [Optional]
-- **Feature 5:** [Optional]
+## 🏗️ Architecture & Flow
+```
+React Frontend (Vite)
+       │
+       ▼  (Axios REST)
+FastAPI Backend (/api)
+       │
+       ▼
+Service Layer (vessel, congestion, routing, operations)
+       │
+       ├──► ML Engine (Random Forest Congestion Classifier)
+       ├──► Routing Engine (Multi-criteria Scoring)
+       └──► Optimization Engine (Greedy Berth & Crane Scheduler)
+       │
+       ▼
+72-Hour Planner & Data Store (SQLite / CSV)
+```
 
 ---
 
 ## 🛠️ Tech Stack
-
-| Category | Technologies |
-|---|---|
-| **Languages** | [e.g., Python, TypeScript] |
-| **Frameworks** | [e.g., FastAPI, React] |
-| **IBM Technologies** | [e.g., watsonx.ai, IBM Bob, IBM Cloud] |
-| **Databases** | [e.g., PostgreSQL, Redis] |
-| **Other** | [e.g., Docker, GitHub Actions] |
+- **Backend**: Python 3.11+, FastAPI, Uvicorn, Pydantic, pandas, NumPy, scikit-learn, SQLite, python-dotenv
+- **Frontend**: React 18, Vite, React Router, Recharts, Lucide React, Glassmorphic CSS
+- **Testing**: pytest, httpx
 
 ---
 
-## 📁 Repository Structure
-
+## 📂 Repository Structure
 ```
-├── src/                  # All source code
-├── docs/                 # Written documentation
-│   ├── problem-statement.md
-│   ├── solution-overview.md
-│   ├── architecture.md
-│   └── setup-guide.md
-├── demo/                 # Demo artifacts
-│   ├── screenshots/      # App screenshots
-│   └── demo-video-link.txt  # Link to demo video
-├── presentation/         # Slide deck
-└── submission.yaml       # Structured submission metadata
+├── backend/
+│   ├── api/             # FastAPI REST endpoints
+│   ├── models/          # Pydantic data schemas
+│   ├── services/        # Decoupled business logic
+│   ├── ml/              # Preprocessing, feature engineering & model training
+│   ├── optimization/    # Berth, crane & schedule optimizers
+│   ├── routing/         # Route engine & multi-attribute scoring
+│   ├── planner/         # 72-Hour operational horizon generator
+│   ├── data/            # Realistic synthetic CSV datasets
+│   ├── database/        # SQLite connection and migration scripts
+│   ├── tests/           # Independent unit test suites
+│   ├── main.py          # FastAPI application entrypoint
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/  # Reusable UI widgets (cards, tables, badges)
+│   │   ├── pages/       # Dashboard, Vessels, Congestion, Routing, Operations
+│   │   ├── services/    # Centralized Axios API client
+│   │   ├── hooks/       # useApi reactive hook
+│   │   └── utils/       # Date formatting & status helpers
+│   ├── package.json
+│   └── vite.config.js
+├── docs/                # Architecture, API, ML & optimization specs
+└── demo/                # Sample input and output JSON artifacts
 ```
 
 ---
 
-## ⚡ How to Run
+## 🚀 Getting Started
 
-> **Copy these exact steps from your [`docs/setup-guide.md`](docs/setup-guide.md)**
-
+### 1. Backend Setup
 ```bash
-# 1. Clone the repo
-git clone https://github.com/[your-repo].git
-cd [your-repo]
+# From workspace root
+pip install -r backend/requirements.txt
 
-# 2. Install dependencies
-[your install command here]
+# Run ML model training
+python -m backend.ml.train_model
 
-# 3. Configure environment
-cp .env.example .env
-# Edit .env with your values
+# Launch FastAPI Dev Server
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+```
+Backend API will be accessible at: `http://127.0.0.1:8000`  
+Swagger API Docs: `http://127.0.0.1:8000/docs`
 
-# 4. Run the project
-[your run command here]
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Frontend Web Dashboard will be live at: `http://localhost:5173`
+
+---
+
+## 🧪 Running Tests
+```bash
+python -m pytest backend/tests/ -v
 ```
 
 ---
 
-## 🖥️ Demo
-
-| Artifact | Link |
-|---|---|
-| 📹 Demo Video | [See demo/demo-video-link.txt](demo/demo-video-link.txt) |
-| 🌐 Live Demo | [See demo/live-demo-url.txt](demo/live-demo-url.txt) |
-| 🖼️ Screenshots | [See demo/screenshots/](demo/screenshots/) |
-| 📊 Presentation | [See presentation/slides.pdf](presentation/) |
-
----
-
-## ⚠️ Known Limitations
-
-> Be honest — judges appreciate transparency over overclaiming.
-
-- [Limitation 1: e.g., "Authentication is mocked — not production-ready"]
-- [Limitation 2: e.g., "Only tested on Chrome"]
-- [Limitation 3: e.g., "Feature X is scaffolded but not fully implemented"]
+## 👥 Team & Module Responsibilities (4-Member Git Branching)
+| Member | Git Feature Branch | Module Responsibility |
+|---|---|---|
+| **Member 1** | `feature/congestion-prediction` | ML preprocessing, feature engineering, model training, and prediction API |
+| **Member 2** | `feature/alternate-routing` | Route scoring heuristics, terminal evaluation, and rerouting advice |
+| **Member 3** | `feature/optimization` | Berth & crane greedy algorithms, turnaround estimations, and 72-hour planning |
+| **Member 4** | `feature/frontend-dashboard` | React SPA, glassmorphic UI, charts, tables, and API integration |
 
 ---
 
-## 🏅 What We're Most Proud Of
-
-[Tell the judges what part of your submission is strongest and worth paying close attention to.]
-
----
+## 🔮 Future Enhancements
+- AIS real-time telemetry stream ingestion
+- Non-linear integer programming (MIP / CP-SAT) for advanced berth optimization
+- Multi-port regional coordination for container transshipment

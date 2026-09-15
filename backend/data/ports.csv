@@ -1,0 +1,4 @@
+port_id,port_name,latitude,longitude,total_berths,total_cranes,daily_capacity
+PORT_METRO,Port Metro Hub,1.290270,103.851959,11,29,35000
+PORT_WEST,West Gateway Terminal,1.264400,103.820100,6,16,18000
+PORT_EAST,East Logistics Harbor,1.312000,103.905000,5,13,15000
