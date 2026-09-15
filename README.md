@@ -1,6 +1,6 @@
-# 🚀 [Container Congestion Predictor & Port Operations Optimiser]
+# 🚀 Container Congestion Predictor & Port Operations Optimiser
 
-> ⚠️ **Replace everything in `[ ]` brackets with your actual content before submission.**
+>  **The 2021 LA/Long Beach port backlog had 100+ ships waiting offshore for weeks, costing global supply chains $10B+. Port operators allocate berths, cranes, and yard space across hundreds of vessels manually in spreadsheets. Congestion hotspots are identified reactively — after vessels are already queuing — and alternate routing decisions come too late to help.**
 
 ---
 
@@ -10,8 +10,8 @@
 |---|---|
 | **Team Name** | [Your Team Name] |
 | **Track** | [AI / DevOps / Sustainability / Open] |
-| **Team Lead** | [Name] — [email@ibm.com] |
-| **Members** | [Name 1], [Name 2], [Name 3] |
+| **Team Lead** | [Kushal Vadhel] — [email@ibm.com] |
+| **Members** | [Darshan Raval], [Parth Patoliya], [Jay Rohit] |
 
 ---
 
