@@ -7,6 +7,7 @@ from .api.vessel_routes import router as vessel_router
 from .api.congestion_routes import router as congestion_router
 from .api.routing_routes import router as routing_router
 from .api.operations_routes import router as operations_router
+from .services.prediction_service import get_dashboard_summary_data
 from .database.database import check_connection, initialize_database
 
 load_dotenv()
@@ -65,3 +66,20 @@ def health_check():
         "status": "healthy",
         "database": "connected" if db_ok else "unreachable"
     }
+
+@app.get("/dashboard-summary")
+@app.get("/api/dashboard-summary")
+def get_dashboard_summary():
+    """
+    Returns aggregated port operations dashboard summary:
+    - total_vessels
+    - high_risk_vessels
+    - congested_terminals
+    - available_berths
+    - active_cranes
+    - congestion_probability
+    - expected_delay
+    - vessel_distribution: { scheduled, queued, approaching }
+    """
+    return get_dashboard_summary_data()
+

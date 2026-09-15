@@ -1,20 +1,26 @@
 import os
+from pathlib import Path
 from typing import Optional
 from dotenv import load_dotenv
 from pymongo import MongoClient, ASCENDING
 from pymongo.database import Database
 
-# Load environment variables from backend/.env or parent .env
+# Explicitly load backend/.env
+BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_PATH = BASE_DIR / ".env"
+if ENV_PATH.exists():
+    load_dotenv(dotenv_path=ENV_PATH)
 load_dotenv()
 
 MONGODB_URI: str = os.getenv(
     "MONGODB_URI",
-    "mongodb+srv://USERNAME:PASSWORD@CLUSTER.mongodb.net/?retryWrites=true&w=majority"
+    "mongodb+srv://Darshan:MOVIE...@cluster0.h2a5qe7.mongodb.net/?retryWrites=true&w=majority"
 )
 DATABASE_NAME: str = os.getenv("DATABASE_NAME", "port_operations")
 
 _client: Optional[MongoClient] = None
 _db: Optional[Database] = None
+
 
 def get_client() -> MongoClient:
     """
