@@ -81,6 +81,8 @@ def calculate_berth_score(
     raw_status = str(berth.get("status", "AVAILABLE")).upper()
     avail_score = 1.0 if raw_status == "AVAILABLE" else 0.5
 
+<<<<<<< HEAD
+=======
     # 2. Waiting-Time Score (30%)
     wait_seconds = max(0.0, (berth_free_time - vessel_arrival_time).total_seconds())
     wait_hours = wait_seconds / 3600.0
@@ -120,22 +122,29 @@ def calculate_berth_score(
 
     return round(composite_score, 3), breakdown
 
+>>>>>>> 12a37443dd3d2e84a104cf1c809c9028acc9d570
 def assign_best_berth(
     vessel: Dict[str, Any],
     berths: List[Dict[str, Any]],
     berth_available_times: Optional[Dict[str, datetime]] = None
 ) -> Optional[Dict[str, Any]]:
     """
-    Task 2: Smart Berth Allocation Engine
+    Smart Berth Allocation Engine:
     Rules:
-      1. Filter by vessel size compatibility & status
+      1. Filter by vessel size compatibility & berth status
       2. Score each berth:
+<<<<<<< HEAD
+         cost_score = (earliest_available_wait * 0.5) + (crane_count * -0.3) + (capacity_fit * -0.2)
+      3. Pick candidate with lowest cost score
+    """
+=======
          score = (earliest_available_wait * 0.5) + (crane_count * -0.3) + (capacity_fit * -0.2)
       3. Pick lowest score (best option)
     """
     if not berths:
         return None
 
+>>>>>>> 12a37443dd3d2e84a104cf1c809c9028acc9d570
     if berth_available_times is None:
         berth_available_times = {}
 
@@ -183,36 +192,37 @@ def assign_best_berth(
         })
 
     if not scored_candidates:
-        # Fallback to first available berth if draft filter was strict
-        first_b = berths[0]
+        first_b = berths[0] if berths else {}
         return {
             "berth": first_b,
             "berth_id": first_b.get("berth_id", "B01"),
             "terminal_id": first_b.get("terminal_id", "T1"),
             "berth_name": first_b.get("berth_name", "Berth B01"),
-            "crane_count": int(first_b.get("crane_count", 3)),
+            "crane_count": int(first_b.get("crane_count", 3) if first_b else 3),
             "score": 0.0,
             "wait_hours": 0.0,
             "start_time": v_arrival,
-            "why": f"Assigned default Berth {first_b.get('berth_id', 'B01')} based on primary terminal queue."
+            "why": f"Assigned default Berth {first_b.get('berth_id', 'B01') if first_b else 'B01'} based on primary terminal queue."
         }
 
     # Pick candidate with lowest score
     scored_candidates.sort(key=lambda x: (x["score"], x["wait_hours"]))
-    best_candidate = scored_candidates[0]
-    return best_candidate
+    return scored_candidates[0]
 
 def find_best_berth(
     vessel: Dict[str, Any],
     berths: List[Dict[str, Any]],
     berth_available_times: Optional[Dict[str, datetime]] = None
-) -> Optional[Dict[str, Any]]:
+) -> Dict[str, Any]:
     """
-    Greedy evaluation alias delegating to assign_best_berth.
+    Returns top ML-predicted & constraint-feasible berth for a vessel.
     """
     best = assign_best_berth(vessel, berths, berth_available_times)
-    return best.get("berth") if best else None
+    if best and best.get("berth"):
+        return best["berth"]
 
+<<<<<<< HEAD
+=======
     t_id = berth.get("terminal_id", "T1")
     ml_res = predict_preferred_berth(vessel, target_terminal=t_id)
     confidence = ml_res.get("confidence", 0.85)
@@ -224,6 +234,7 @@ def find_best_berth(vessel: Dict[str, Any], berths: List[Dict[str, Any]]) -> Dic
     """
     Compatibility helper: Returns top ML-predicted feasible berth for a vessel.
     """
+>>>>>>> 12a37443dd3d2e84a104cf1c809c9028acc9d570
     t_id = vessel.get("recommended_terminal") or vessel.get("current_terminal") or "T1"
     ml_res = predict_preferred_berth(vessel, target_terminal=t_id)
     ranked = ml_res.get("ranked_berths", [])
@@ -234,7 +245,11 @@ def find_best_berth(vessel: Dict[str, Any], berths: List[Dict[str, Any]]) -> Dic
             feasible, _ = check_berth_feasibility(vessel, berth_map[b_id])
             if feasible:
                 return berth_map[b_id]
+<<<<<<< HEAD
+
+=======
     
+>>>>>>> 12a37443dd3d2e84a104cf1c809c9028acc9d570
     return berths[0] if berths else {}
 
 def optimize_berth_assignments(

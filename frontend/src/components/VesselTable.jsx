@@ -1,14 +1,88 @@
 import React from 'react';
-import RiskBadge from './RiskBadge';
-import { formatDate } from '../utils/formatDate';
-import { cleanValue } from '../utils/cleanValue';
-import { Ship, Clock } from 'lucide-react';
+import { cleanText } from '../utils/cleanText';
 
-function PriorityBadge({ priority }) {
-  const p = String(priority || '').toUpperCase();
-  if (p === 'HIGH') return <span className="badge-priority-high">HIGH</span>;
-  if (p === 'MEDIUM') return <span className="badge-priority-medium">MED</span>;
-  return <span className="badge-priority-low">{p || 'LOW'}</span>;
+// Task 6: Clean Badges with proper structure and dot indicators (Task 3)
+function renderBadge(level) {
+  const p = cleanText(level || 'LOW').toUpperCase();
+
+  if (p === 'HIGH' || p === 'CRITICAL') {
+    return (
+      <span 
+        className="bg-red-500 text-white px-2 py-1 rounded inline-flex items-center gap-1"
+        style={{ 
+          backgroundColor: '#ef4444', 
+          color: '#ffffff', 
+          padding: '3px 8px', 
+          borderRadius: '4px', 
+          fontSize: '0.75rem', 
+          fontWeight: 700,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px'
+        }}
+      >
+        <span style={{ fontSize: '0.65rem' }}>●</span>
+        <span>HIGH</span>
+      </span>
+    );
+  }
+
+  if (p === 'MEDIUM' || p === 'MED') {
+    return (
+      <span 
+        className="bg-yellow-400 text-black px-2 py-1 rounded inline-flex items-center gap-1"
+        style={{ 
+          backgroundColor: '#facc15', 
+          color: '#000000', 
+          padding: '3px 8px', 
+          borderRadius: '4px', 
+          fontSize: '0.75rem', 
+          fontWeight: 700,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px'
+        }}
+      >
+        <span style={{ fontSize: '0.65rem' }}>●</span>
+        <span>MEDIUM</span>
+      </span>
+    );
+  }
+
+  return (
+    <span 
+      className="bg-green-500 text-white px-2 py-1 rounded inline-flex items-center gap-1"
+      style={{ 
+        backgroundColor: '#22c55e', 
+        color: '#ffffff', 
+        padding: '3px 8px', 
+        borderRadius: '4px', 
+        fontSize: '0.75rem', 
+        fontWeight: 700,
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px'
+      }}
+    >
+      <span style={{ fontSize: '0.65rem' }}>●</span>
+      <span>LOW</span>
+    </span>
+  );
+}
+
+// Task 5: Safe date formatting using new Date(arrival_time).toLocaleString()
+function formatArrivalTime(timeStr) {
+  if (!timeStr) return '-';
+  try {
+    const cleaned = cleanText(timeStr);
+    const d = new Date(cleaned);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleString();
+    }
+    return cleaned;
+  } catch {
+    return cleanText(timeStr);
+  }
 }
 
 export default function VesselTable({ vessels = [], onSelectVessel }) {
@@ -25,10 +99,11 @@ export default function VesselTable({ vessels = [], onSelectVessel }) {
       <table className="data-table" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
+            {/* Task 4: Clean columns - NO stray icon columns */}
             <th>Vessel Name</th>
             <th>Arrival Time</th>
             <th>Size / TEU</th>
-            <th>Priority & Risk</th>
+            <th>Priority</th>
             <th>Status</th>
             {onSelectVessel && <th>Action</th>}
           </tr>
@@ -36,84 +111,67 @@ export default function VesselTable({ vessels = [], onSelectVessel }) {
         <tbody>
           {vessels.map((v, idx) => {
             const rawName = v.vessel_name || v.name || v.vessel_id || 'Vessel';
-            const vesselName = cleanValue(rawName);
-            const vId = cleanValue(v.vessel_id || `VSL-${idx + 1}`);
-            const terminal = cleanValue(v.current_terminal || v.terminal_id || 'T1');
-            const rawSize = v.vessel_size || (v.container_count > 1800 ? 'Ultra Large (ULCV)' : v.container_count > 1200 ? 'Neo-Panamax' : 'Feeder');
-            const vesselSize = cleanValue(rawSize);
-            const status = cleanValue(v.status || 'Scheduled');
-            const teuCount = Number(v.container_count || v.teu || 0);
+            const vesselName = cleanText(rawName);
+            const vId = cleanText(v.vessel_id || `VSL-${idx + 1}`);
+            const terminal = cleanText(v.current_terminal || v.terminal_id || 'T1');
+            const rawSize = v.vessel_size || (Number(v.container_count || 0) > 1800 ? 'Ultra Large' : Number(v.container_count || 0) > 1200 ? 'Large' : 'Feeder');
+            const vesselSize = cleanText(rawSize);
+            const rawStatus = v.status || 'Scheduled';
+            const status = cleanText(rawStatus);
+            const teuCount = Number(cleanText(v.container_count || v.teu || 0)) || 0;
+            const priorityLevel = cleanText(v.priority || v.risk_level || 'LOW');
 
             return (
               <tr key={v.vessel_id || vesselName || idx}>
-                {/* Vessel Name */}
+                {/* Vessel Name (Task 2 & 4: Clean text without SVG column) */}
                 <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{
-                      background: 'rgba(2, 132, 199, 0.12)',
-                      color: 'var(--color-primary)',
-                      padding: '6px',
-                      borderRadius: '6px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0
-                    }}>
-                      <Ship size={16} />
-                    </div>
-                    <div>
-                      <span style={{ fontWeight: 700, color: 'var(--text-primary)', display: 'block', fontSize: '0.88rem' }}>
-                        {vesselName}
-                      </span>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                        {vId} • Terminal {terminal}
-                      </span>
-                    </div>
+                  <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.88rem' }}>
+                    {cleanText(vesselName)}
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    {cleanText(vId)} • Terminal {cleanText(terminal)}
                   </div>
                 </td>
 
-                {/* Arrival Time */}
-                <td style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <Clock size={13} style={{ color: 'var(--color-primary)', opacity: 0.8, flexShrink: 0 }} />
-                    <span>{cleanValue(formatDate(v.arrival_time))}</span>
-                  </div>
+                {/* Arrival Time (Task 5: new Date(arrival_time).toLocaleString()) */}
+                <td style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
+                  <span>{formatArrivalTime(v.arrival_time)}</span>
                 </td>
 
                 {/* Size / Capacity */}
                 <td>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.82rem', display: 'block' }}>
-                    {vesselSize}
-                  </span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.82rem' }}>
+                    {cleanText(vesselSize)}
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                     {teuCount.toLocaleString()} TEU
-                  </span>
+                  </div>
                 </td>
 
-                {/* Priority & Risk */}
+                {/* Priority Badge (Task 3 & 6: Clean badge with bullet, no SVG string) */}
                 <td>
-                  <RiskBadge level={cleanValue(v.risk_level || v.priority || 'LOW')} />
+                  {renderBadge(priorityLevel)}
                 </td>
 
-                {/* Status */}
+                {/* Status (Clean indicator without SVG) */}
                 <td>
                   <span style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '5px',
+                    gap: '6px',
                     fontSize: '0.78rem',
                     fontWeight: 600,
-                    padding: '3px 8px',
+                    padding: '3px 9px',
                     borderRadius: '9999px',
-                    background: status.toUpperCase() === 'QUEUED' ? 'rgba(249, 115, 22, 0.12)' : status.toUpperCase() === 'APPROACHING' ? 'rgba(56, 189, 248, 0.12)' : 'rgba(16, 185, 129, 0.12)',
-                    color: status.toUpperCase() === 'QUEUED' ? 'var(--status-high)' : status.toUpperCase() === 'APPROACHING' ? 'var(--color-primary)' : 'var(--status-low)'
+                    backgroundColor: status.toUpperCase() === 'QUEUED' ? 'rgba(249, 115, 22, 0.12)' : status.toUpperCase() === 'APPROACHING' ? 'rgba(56, 189, 248, 0.12)' : 'rgba(16, 185, 129, 0.12)',
+                    color: status.toUpperCase() === 'QUEUED' ? '#ea580c' : status.toUpperCase() === 'APPROACHING' ? '#0284c7' : '#16a34a'
                   }}>
-                    <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: 'currentColor' }} />
-                    {status}
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor', display: 'inline-block' }} />
+                    <span>{cleanText(status)}</span>
                   </span>
                 </td>
 
-                {/* Action button if handler supplied */}
+                {/* Action button */}
                 {onSelectVessel && (
                   <td>
                     <button
@@ -124,6 +182,8 @@ export default function VesselTable({ vessels = [], onSelectVessel }) {
                       Route →
                     </button>
                   </td>
+<<<<<<< HEAD
+=======
           {vessels.map((v) => (
             <tr key={v.vessel_id}>
               <td style={{ fontWeight: 700, color: 'var(--color-primary)', fontFamily: 'monospace', fontSize: '0.78rem' }}>
@@ -157,6 +217,7 @@ export default function VesselTable({ vessels = [], onSelectVessel }) {
                   >
                     Analyze Route
                   </button>
+>>>>>>> 12a37443dd3d2e84a104cf1c809c9028acc9d570
                 )}
               </tr>
             );

@@ -437,9 +437,17 @@ body {
   transform: translateY(-1px);
 }
 
-
 /* Sidebar nav hover (handled inline but provide :hover for a11y) */
 a.nav-item:hover {
   background-color: var(--bg-sidebar-hover) !important;
   color: #e2e8f0 !important;
 }
+
+<<<<<<< HEAD
+=======
+/* Sidebar nav hover (handled inline but provide :hover for a11y) */
+a.nav-item:hover {
+  background-color: var(--bg-sidebar-hover) !important;
+  color: #e2e8f0 !important;
+}
+>>>>>>> 12a37443dd3d2e84a104cf1c809c9028acc9d570

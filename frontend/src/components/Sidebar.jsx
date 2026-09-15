@@ -5,17 +5,30 @@ import {
   Ship, 
   Activity, 
   GitFork, 
-  CalendarClock
+  CalendarClock,
+  Bell
 } from 'lucide-react';
 
+import alertStore from '../services/alertStore';
+
 export default function Sidebar() {
+  const [unreadCount, setUnreadCount] = useState(alertStore.getUnreadCount());
+
+  React.useEffect(() => {
+    return alertStore.subscribe(() => {
+      setUnreadCount(alertStore.getUnreadCount());
+    });
+  }, []);
+
   const mainNavItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/vessels', label: 'Vessels', icon: Ship },
     { to: '/congestion', label: 'Congestion', icon: Activity },
     { to: '/routing', label: 'Routing', icon: GitFork },
     { to: '/operations', label: 'Operations', icon: CalendarClock },
+    { to: '/alerts', label: 'Alerts', icon: Bell, badge: unreadCount > 0 ? String(unreadCount) : null },
   ];
+
 
   return (
     <aside style={{
@@ -85,7 +98,7 @@ export default function Sidebar() {
           Navigation
         </div>
 
-        {mainNavItems.map(({ to, label, icon: Icon }) => (
+        {mainNavItems.map(({ to, label, icon: Icon, badge }) => (
           <NavLink
             key={to}
             to={to}
@@ -94,7 +107,7 @@ export default function Sidebar() {
             style={({ isActive }) => ({
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
+              justifyContent: 'space-between',
               padding: '9px 12px',
               borderRadius: '6px',
               textDecoration: 'none',
@@ -110,12 +123,27 @@ export default function Sidebar() {
           >
             {({ isActive }) => (
               <>
-                <Icon size={16} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.7 }} />
-                <span style={{ letterSpacing: '0.01em' }}>{label}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Icon size={16} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.7 }} />
+                  <span style={{ letterSpacing: '0.01em' }}>{label}</span>
+                </div>
+                {badge && (
+                  <span style={{
+                    backgroundColor: '#ef4444',
+                    color: '#ffffff',
+                    fontSize: '0.65rem',
+                    fontWeight: 800,
+                    padding: '1px 6px',
+                    borderRadius: '9999px'
+                  }}>
+                    {badge}
+                  </span>
+                )}
               </>
             )}
           </NavLink>
         ))}
+
       </nav>
 
       {/* Sidebar Footer Live Status */}

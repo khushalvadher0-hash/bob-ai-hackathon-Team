@@ -108,10 +108,10 @@ export default function Congestion() {
           <p style={{ fontSize: '0.85rem' }}>No terminals currently classified under '{severityFilter}' congestion severity.</p>
         </div>
       ) : (
-        /* Grid of Congestion Cards */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+        /* Vertical Stack of Terminal Congestion Cards */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {filteredTerminals.map(term => (
-            <CongestionCard key={term.terminal_id} terminal={term} />
+            <CongestionCard key={term.terminal_id} terminal={term} isVertical={true} />
           ))}
         </div>
       )}

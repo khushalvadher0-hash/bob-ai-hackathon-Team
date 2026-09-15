@@ -11,6 +11,7 @@ import Routing from './pages/Routing';
 import Operations from './pages/Operations';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Alerts from './pages/Alerts';
 
 function AuthenticatedLayout() {
   const handleRefresh = () => {
@@ -29,6 +30,7 @@ function AuthenticatedLayout() {
           <Route path="/congestion" element={<Congestion />} />
           <Route path="/routing" element={<Routing />} />
           <Route path="/operations" element={<Operations />} />
+          <Route path="/alerts" element={<Alerts />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
