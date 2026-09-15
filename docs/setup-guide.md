@@ -1,79 +1,89 @@
-# Setup Guide
+# Setup & Installation Guide
 
-> **This file is read by the automated evaluation pipeline. Be precise and complete.**
+> Follow these steps to run the complete Container Congestion Predictor & Port Operations Optimiser locally.
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+Before running the project, make sure you have the following installed:
 
-- [ ] [e.g., Python 3.11+]
-- [ ] [e.g., Node.js 18+]
-- [ ] [e.g., Docker Desktop]
-- [ ] [e.g., An IBM Cloud account with watsonx.ai access]
+- **Python 3.11+**
+- **Node.js 18+** and **npm**
+- **Git**
 
-## Environment Variables
+---
 
-Copy `.env.example` to `.env` and fill in the values:
+## Environment Configuration
+
+Create a local environment file from the provided template:
 
 ```bash
-cp .env.example .env
+cp backend/.env.example backend/.env
 ```
 
-| Variable | Description | Required |
+| Variable | Description | Default Value |
 |---|---|---|
-| `WATSONX_API_KEY` | Your IBM watsonx.ai API key | Yes |
-| `WATSONX_PROJECT_ID` | Your watsonx.ai project ID | Yes |
-| `DATABASE_URL` | PostgreSQL connection string | Yes |
-| `SLACK_WEBHOOK_URL` | Slack webhook for alerts | No |
+| `DATABASE_URL` | SQLite database connection string | `sqlite:///./database/port_operations.db` |
+| `API_HOST` | FastAPI server host | `127.0.0.1` |
+| `API_PORT` | FastAPI server port | `8000` |
+| `CORS_ORIGINS` | Allowed frontend origins | `http://localhost:5173,http://127.0.0.1:5173` |
 
-## Installation
+---
+
+## Backend Installation & Execution
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/[your-org]/[your-repo].git
-cd [your-repo]
+git clone https://github.com/khushalvadher0-hash/bob-ai-hackathon-Team.git
+cd bob-ai-hackathon-Team
 
 # 2. Install backend dependencies
-[your command — e.g.: pip install -r requirements.txt]
+pip install -r backend/requirements.txt
 
-# 3. Install frontend dependencies (if applicable)
-[your command — e.g.: cd frontend && npm install]
+# 3. Train the ML congestion prediction model
+python -m backend.ml.train_model
 
-# 4. Set up the database (if applicable)
-[your command — e.g.: python manage.py migrate]
+# 4. Start the FastAPI API server
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-## Running the Application
+The Backend API will be active at `http://127.0.0.1:8000`  
+Interactive OpenAPI/Swagger documentation is available at `http://127.0.0.1:8000/docs`
+
+---
+
+## Frontend Installation & Execution
+
+In a second terminal window:
 
 ```bash
-# Start the backend
-[your command — e.g.: uvicorn app.main:app --reload]
+# 1. Navigate to the frontend directory
+cd frontend
 
-# Start the frontend (in a separate terminal, if applicable)
-[your command — e.g.: cd frontend && npm run dev]
+# 2. Install Node dependencies
+npm install
+
+# 3. Start the Vite development server
+npm run dev
 ```
 
-The application will be available at: `http://localhost:[PORT]`
+The Frontend Web Application will be running at `http://localhost:5173`
 
-## Running Tests
+---
+
+## Running Automated Tests
+
+Run the full backend test suite to verify congestion prediction, routing scoring, and greedy scheduling:
 
 ```bash
-[your test command — e.g.: pytest tests/ -v]
+python -m pytest backend/tests/ -v
 ```
 
-## Quick Demo (Optional)
-
-If you have a demo script or sample data to showcase the project quickly:
-
-```bash
-[e.g.: python demo/seed_demo_data.py]
-[e.g.: open http://localhost:8000/demo]
-```
+---
 
 ## Troubleshooting
 
 | Issue | Solution |
 |---|---|
-| [e.g., `ModuleNotFoundError`] | [e.g., Run `pip install -r requirements.txt` again] |
-| [e.g., Database connection refused] | [e.g., Ensure PostgreSQL is running: `docker compose up db`] |
-| [e.g., watsonx.ai 401 error] | [e.g., Check `WATSONX_API_KEY` in your `.env` file] |
+| `ModuleNotFoundError: No module named 'pandas'` | Run `pip install -r backend/requirements.txt` |
+| Port `8000` or `5173` in use | Terminate existing instances or specify `--port 8001` for backend |
+| Model file `congestion_model.pkl` missing | Run `python -m backend.ml.train_model` to generate the serialized model artifact |

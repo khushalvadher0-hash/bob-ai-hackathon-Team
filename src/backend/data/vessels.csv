@@ -1,0 +1,23 @@
+vessel_id,vessel_name,arrival_time,departure_deadline,container_count,origin,destination,current_port,current_terminal,priority,vessel_size,status
+V001,Maersk Mc-Kinney,2026-09-15T06:00:00,2026-09-16T18:00:00,1850,Rotterdam,Singapore,Port Metro,T1,HIGH,Ultra Large,Queued
+V002,Ever Given,2026-09-15T07:30:00,2026-09-16T22:00:00,1950,Shanghai,Port Metro,Port Metro,T1,HIGH,Ultra Large,Queued
+V003,CMA CGM Jacques Saade,2026-09-15T09:00:00,2026-09-17T02:00:00,1600,Yantian,Port Metro,Port Metro,T2,MEDIUM,Large,Approaching
+V004,MSC Gulsun,2026-09-15T10:15:00,2026-09-16T16:00:00,2100,Busan,Port Metro,Port Metro,T1,HIGH,Ultra Large,Queued
+V005,Hapag-Lloyd Berlin Express,2026-09-15T11:45:00,2026-09-17T08:00:00,1400,Hamburg,Port Metro,Port Metro,T2,LOW,Large,Approaching
+V006,ONE Triumph,2026-09-15T13:00:00,2026-09-17T12:00:00,1750,Tokyo,Port Metro,Port Metro,T3,MEDIUM,Large,Approaching
+V007,OOCL Hong Kong,2026-09-15T14:30:00,2026-09-17T18:00:00,1900,Hong Kong,Port Metro,Port Metro,T1,HIGH,Ultra Large,Scheduled
+V008,COSCO Shipping Universe,2026-09-15T16:00:00,2026-09-18T00:00:00,1650,Ningbo,Port Metro,Port Metro,T3,LOW,Large,Scheduled
+V009,Yang Ming Trust,2026-09-15T18:00:00,2026-09-18T06:00:00,1200,Kaohsiung,Port Metro,Port Metro,T2,MEDIUM,Medium,Scheduled
+V010,Hyundai Honor,2026-09-15T20:30:00,2026-09-18T10:00:00,1350,Ulsan,Port Metro,Port Metro,T4,LOW,Medium,Scheduled
+V011,ZIM Antwerp,2026-09-16T01:00:00,2026-09-18T14:00:00,950,Haifa,Port Metro,Port Metro,T3,MEDIUM,Medium,Scheduled
+V012,Wan Hai 505,2026-09-16T03:30:00,2026-09-18T18:00:00,800,Taipei,Port Metro,Port Metro,T4,LOW,Feeder,Scheduled
+V013,Pacific Islander,2026-09-16T05:00:00,2026-09-18T22:00:00,650,Manila,Port Metro,Port Metro,T4,LOW,Feeder,Scheduled
+V014,Atlantic Pioneer,2026-09-16T08:00:00,2026-09-19T02:00:00,1100,New York,Port Metro,Port Metro,T2,HIGH,Medium,Scheduled
+V015,Baltic Trader,2026-09-16T11:00:00,2026-09-19T06:00:00,750,Antwerp,Port Metro,Port Metro,T3,LOW,Feeder,Scheduled
+V016,Nordic Star,2026-09-16T14:00:00,2026-09-19T10:00:00,1450,Oslo,Port Metro,Port Metro,T1,MEDIUM,Large,Scheduled
+V017,Mediterranean Pearl,2026-09-16T17:30:00,2026-09-19T14:00:00,1600,Genoa,Port Metro,Port Metro,T2,HIGH,Large,Scheduled
+V018,Arabian Navigator,2026-09-16T21:00:00,2026-09-19T20:00:00,1800,Dubai,Port Metro,Port Metro,T1,HIGH,Ultra Large,Scheduled
+V019,Indian Ocean Express,2026-09-17T02:00:00,2026-09-20T00:00:00,1300,Mumbai,Port Metro,Port Metro,T3,MEDIUM,Medium,Scheduled
+V020,Cape Hope,2026-09-17T06:00:00,2026-09-20T04:00:00,900,Durban,Port Metro,Port Metro,T4,LOW,Feeder,Scheduled
+V021,Strait Challenger,2026-09-17T10:00:00,2026-09-20T08:00:00,1500,Port Klang,Port Metro,Port Metro,T2,MEDIUM,Large,Scheduled
+V022,Coral Wave,2026-09-17T14:00:00,2026-09-20T12:00:00,1050,Sydney,Port Metro,Port Metro,T3,LOW,Medium,Scheduled

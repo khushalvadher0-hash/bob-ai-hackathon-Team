@@ -2,20 +2,24 @@
 
 ## Background
 
-[Describe the broader context. What domain or industry does this problem belong to? What situation creates the problem?]
+Global container ports are critical nodes in maritime logistics, processing hundreds of millions of TEUs (twenty-foot equivalent units) annually. In modern deepwater container terminals, port superintendents and dispatchers face rapid fluctuations in vessel traffic, unpredictable arrival windows, variable cargo volumes, and constrained quay infrastructure. 
 
 ## The Problem
 
-[State the problem clearly and specifically. Avoid vague statements like "things are slow" — instead say "Operations teams spend an average of 45 minutes per incident diagnosing pipeline failures because logs are scattered across 6 different tools."]
+Ports frequently suffer from severe terminal congestion and berth bottlenecking due to uncoordinated vessel arrivals, draft incompatibilities, and manual, reactive allocation of quay berths and container cranes. Without predictive visibility into queue buildups across adjacent terminals, shift supervisors face average turnaround delays exceeding 8 to 14 hours per vessel, leading to significant demurrage fines, vessel idling emissions, and cascading supply chain bottlenecks.
 
 ## Who is Affected
 
-[Describe the specific user or persona experiencing this problem. Be concrete — not "developers" but "backend engineers managing CI/CD pipelines in enterprises with 50+ microservices."]
+- **Port Shift Supervisors & Harbor Masters:** Responsible for berth allocation and operational scheduling across terminals under tight timelines.
+- **Terminal Dispatch Operators:** Managing quay crane crane allocations and discharge sequences.
+- **Liner Shipping Operators:** Shipping carriers facing demurrage penalties and missed sailing windows when stuck in congested port queues.
 
 ## Why It Matters
 
-[What is the cost of this problem? Lost time? Revenue? Safety risk? Frustration? Quantify if possible.]
+- **Financial Impact:** Port congestion incurs millions of dollars in carrier idling costs and terminal demurrage surcharges.
+- **Supply Chain Disruption:** Delays at key hub ports cascade downstream to inland rail and trucking freight corridors.
+- **Environmental Impact:** Vessels forced to queue outside harbor limits generate unnecessary carbon emissions and maritime fuel burn.
 
 ## Why Existing Solutions Fall Short
 
-[Briefly explain what people currently do and why it doesn't fully solve the problem. This sets up why your solution is needed.]
+Conventional port management systems rely heavily on static spreadsheets, siloed rule books, or complex, opaque black-box optimization frameworks that lack real-time predictive machine learning. Existing tools fail to provide explainable alternate terminal routing recommendations or unified 72-hour operational timelines that dispatchers can easily review, understand, and act upon in real time.
