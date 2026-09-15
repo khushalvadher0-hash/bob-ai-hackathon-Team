@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, RefreshCw, Anchor } from 'lucide-react';
+import { RefreshCw, Bell, MapPin, User, ShieldCheck } from 'lucide-react';
 
 export default function Navbar({ onRefresh }) {
   return (
@@ -9,99 +9,93 @@ export default function Navbar({ onRefresh }) {
       top: 0,
       right: 0,
       left: 'var(--sidebar-width)',
-      background: 'rgba(11, 19, 41, 0.85)',
-      backdropFilter: 'blur(16px)',
+      backgroundColor: '#ffffff',
       borderBottom: '1px solid var(--border-color)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 32px',
-      zIndex: 40
+      padding: '0 28px',
+      zIndex: 40,
+      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.03)'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{
-          background: 'rgba(56, 189, 248, 0.1)',
-          padding: '8px',
-          borderRadius: '8px',
-          color: 'var(--color-primary)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
+      {/* Title & Tagline */}
+      <div>
+        <h1 style={{ 
+          fontSize: '1.05rem', 
+          fontWeight: 700, 
+          color: 'var(--text-primary)', 
+          letterSpacing: '-0.01em',
+          lineHeight: 1.2
         }}>
-          <Anchor size={20} />
-        </div>
-        <div>
-          <h1 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
-            Port Operations Optimiser
-          </h1>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Container Congestion Predictor & Shift Command Dashboard
-          </p>
-        </div>
+          Port Operations Dashboard
+        </h1>
+        <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+          Predict • Optimise • Keep Global Trade Moving
+        </p>
       </div>
 
+      {/* Right Controls / Location / User */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         {onRefresh && (
           <button
             className="btn"
             onClick={onRefresh}
+            title="Refresh live data from backend"
             style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              color: 'var(--text-secondary)',
-              border: '1px solid var(--border-color)',
-              padding: '6px 14px',
-              fontSize: '0.8rem'
+              padding: '6px 12px',
+              fontSize: '0.78rem'
             }}
           >
-            <RefreshCw size={14} />
-            <span>Sync Live Port State</span>
+            <RefreshCw size={13} />
+            <span>Sync Live State</span>
           </button>
         )}
 
         <div style={{
-          position: 'relative',
-          padding: '8px',
-          borderRadius: '50%',
-          background: 'rgba(255,255,255,0.05)',
-          color: 'var(--text-secondary)',
-          cursor: 'pointer'
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: '5px 10px',
+          borderRadius: 'var(--radius-sm)',
+          backgroundColor: '#f1f5f9',
+          border: '1px solid var(--border-color)',
+          fontSize: '0.78rem',
+          color: 'var(--text-secondary)'
         }}>
-          <Bell size={18} />
-          <span style={{
-            position: 'absolute',
-            top: 4,
-            right: 4,
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            background: '#ef4444'
-          }} />
+          <MapPin size={13} color="var(--color-primary)" />
+          <span style={{ fontWeight: 600 }}>Port Hub: Sector 1-4</span>
         </div>
 
+        {/* User Pill */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '10px',
+          gap: '8px',
           borderLeft: '1px solid var(--border-color)',
-          paddingLeft: '16px'
+          paddingLeft: '14px'
         }}>
           <div style={{
-            width: '32px',
-            height: '32px',
+            width: '30px',
+            height: '30px',
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #0284c7 0%, #6366f1 100%)',
+            backgroundColor: 'var(--color-primary-light)',
+            color: 'var(--color-primary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '0.8rem',
             fontWeight: 700,
-            color: '#fff'
+            fontSize: '0.75rem',
+            border: '1px solid #bae6fd'
           }}>
             SO
           </div>
-          <div>
-            <p style={{ fontSize: '0.85rem', fontWeight: 600 }}>Shift Supervisor</p>
-            <p style={{ fontSize: '0.7rem', color: 'var(--status-low)' }}>● Operations Online</p>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+              Shift Supervisor
+            </span>
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+              Terminal Command
+            </span>
           </div>
         </div>
       </div>

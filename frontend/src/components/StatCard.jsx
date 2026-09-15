@@ -1,42 +1,65 @@
 import React from 'react';
 
-export default function StatCard({ title, value, subtitle, icon: Icon, color = 'var(--color-primary)' }) {
+export default function StatCard({ 
+  title, 
+  value, 
+  subtitle, 
+  icon: Icon, 
+  color = 'var(--color-primary)',
+  accentBg
+}) {
   return (
-    <div className="glass-panel" style={{ padding: '20px 24px', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
-            {title}
-          </p>
-          <h2 style={{ fontSize: '1.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
-            {value}
-          </h2>
-          {subtitle && (
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{subtitle}</p>
-          )}
-        </div>
+    <div 
+      className="glass-panel" 
+      style={{ 
+        padding: '16px 18px', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'space-between',
+        position: 'relative'
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+        <p style={{ 
+          color: 'var(--text-secondary)', 
+          fontSize: '0.78rem', 
+          fontWeight: 600,
+          lineHeight: 1.2
+        }}>
+          {title}
+        </p>
         {Icon && (
           <div style={{
-            background: `rgba(${color === 'var(--color-primary)' ? '56, 189, 248' : '249, 115, 22'}, 0.12)`,
+            backgroundColor: accentBg || 'var(--color-primary-light)',
             color: color,
-            padding: '12px',
+            padding: '7px',
             borderRadius: 'var(--radius-md)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <Icon size={24} />
+            <Icon size={16} />
           </div>
         )}
       </div>
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: '3px',
-        background: `linear-gradient(90deg, ${color} 0%, transparent 100%)`
-      }} />
+
+      <div>
+        <div style={{ 
+          fontSize: '1.65rem', 
+          fontWeight: 700, 
+          color: 'var(--text-primary)', 
+          letterSpacing: '-0.02em',
+          lineHeight: 1.1,
+          marginBottom: '4px'
+        }}>
+          {value}
+        </div>
+        {subtitle && (
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>
+            {subtitle}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
