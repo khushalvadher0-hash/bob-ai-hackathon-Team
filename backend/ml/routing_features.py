@@ -3,6 +3,10 @@ import numpy as np
 from typing import Dict, Any, Union, List
 
 ROUTING_FEATURE_COLUMNS: List[str] = [
+    'curr_is_T1',
+    'curr_is_T2',
+    'curr_is_T3',
+    'curr_is_T4',
     'container_count',
     'is_high_priority',
     'is_ultra_large',
@@ -51,6 +55,10 @@ def create_routing_features(
     alt_wait = float(alt_cong.get("predicted_wait_hours", alt_cong.get("expected_wait_hours", 2.0)) or 2.0)
 
     data = {
+        'curr_is_T1': 1.0 if curr_term == "T1" else 0.0,
+        'curr_is_T2': 1.0 if curr_term == "T2" else 0.0,
+        'curr_is_T3': 1.0 if curr_term == "T3" else 0.0,
+        'curr_is_T4': 1.0 if curr_term == "T4" else 0.0,
         'container_count': container_count,
         'is_high_priority': 1.0 if priority in ["HIGH", "CRITICAL", "1"] else 0.0,
         'is_ultra_large': 1.0 if "ULTRA" in v_size else 0.0,
