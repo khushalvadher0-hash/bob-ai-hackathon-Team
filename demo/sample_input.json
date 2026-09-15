@@ -1,0 +1,14 @@
+{
+  "vessel_id": "V001",
+  "vessel_name": "Maersk Mc-Kinney",
+  "arrival_time": "2026-09-15T06:00:00",
+  "departure_deadline": "2026-09-16T18:00:00",
+  "container_count": 1850,
+  "origin": "Rotterdam",
+  "destination": "Singapore",
+  "current_port": "Port Metro",
+  "current_terminal": "T1",
+  "priority": "HIGH",
+  "vessel_size": "Ultra Large",
+  "status": "Queued"
+}
