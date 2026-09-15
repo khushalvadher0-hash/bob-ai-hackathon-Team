@@ -93,11 +93,11 @@ export default function Vessels() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
         <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
-            <Ship size={22} color="var(--color-primary)" />
+          <h2 className="page-title">
+            <Ship size={20} color="var(--color-primary)" />
             Vessel Fleet Directory
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '2px' }}>
+          <p className="page-subtitle">
             Real-time fleet roster, cargo workload, priority rating, and assigned terminal berths.
           </p>
         </div>

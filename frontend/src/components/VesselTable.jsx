@@ -4,6 +4,13 @@ import { formatDate } from '../utils/formatDate';
 import { cleanValue } from '../utils/cleanValue';
 import { Ship, Clock } from 'lucide-react';
 
+function PriorityBadge({ priority }) {
+  const p = String(priority || '').toUpperCase();
+  if (p === 'HIGH') return <span className="badge-priority-high">HIGH</span>;
+  if (p === 'MEDIUM') return <span className="badge-priority-medium">MED</span>;
+  return <span className="badge-priority-low">{p || 'LOW'}</span>;
+}
+
 export default function VesselTable({ vessels = [], onSelectVessel }) {
   if (!vessels || vessels.length === 0) {
     return (
@@ -85,7 +92,10 @@ export default function VesselTable({ vessels = [], onSelectVessel }) {
 
                 {/* Priority & Risk */}
                 <td>
-                  <RiskBadge level={cleanValue(v.risk_level || v.priority || 'LOW')} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <PriorityBadge priority={v.priority} />
+                    <RiskBadge level={cleanValue(v.risk_level || v.priority || 'LOW')} />
+                  </div>
                 </td>
 
                 {/* Status */}

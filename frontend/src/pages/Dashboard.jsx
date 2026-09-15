@@ -11,12 +11,12 @@ import {
   CheckCircle2, 
   ArrowRight, 
   Sparkles,
-  Play,
-  Cpu,
-  ShieldAlert,
-  Zap,
-  Layers,
-  HelpCircle
+  Play, 
+  Cpu, 
+  ShieldAlert, 
+  Zap, 
+  Layers, 
+  HelpCircle 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import StatCard from '../components/StatCard';
@@ -182,9 +182,6 @@ export default function Dashboard() {
   const totalBerths = berths.length || 8;
   const availableBerths = berths.filter(b => b.status === 'AVAILABLE' || b.available === true).length || 3;
   const totalCranes = berths.reduce((sum, b) => sum + (Number(b.crane_count) || 3), 0) || 29;
-
-  const scheduledOps = operations?.schedule || [];
-  const activeAssignments = scheduledOps.slice(0, 4);
 
   // Result card color & level handling
   const resultLevel = String(optimizationResult?.congestion_level || 'HIGH').toUpperCase();
@@ -489,7 +486,75 @@ export default function Dashboard() {
         <AIInsightsCard insights={optimizationResult.insights} />
       )}
 
-      {/* 5. Vessel Fleet Table Section */}
+      {/* 5. Port Congestion Hotspots Overview */}
+      {congestion.length > 0 && (
+        <div className="glass-panel" style={{ padding: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <div>
+              <h3 className="section-heading">Port Congestion Hotspots</h3>
+              <p className="section-subheading">AI-predicted bottleneck status and berth zone saturation</p>
+            </div>
+            <Link to="/congestion" style={{ color: 'var(--color-primary)', fontSize: '0.75rem', textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}>
+              Full Forecast →
+            </Link>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+            gap: '10px'
+          }}>
+            {congestion.map(c => {
+              const lvl = String(c.congestion_level || 'LOW').toUpperCase();
+              const isCrit = lvl === 'CRITICAL' || lvl === 'HIGH';
+              const isMed = lvl === 'MEDIUM';
+
+              const badgeColor = isCrit ? 'var(--status-critical)' : isMed ? 'var(--status-med)' : 'var(--status-low)';
+              const badgeBg = isCrit ? 'var(--status-critical-bg)' : isMed ? 'var(--status-med-bg)' : 'var(--status-low-bg)';
+              const borderColor = isCrit ? 'var(--status-critical-border)' : isMed ? 'var(--status-med-border)' : 'var(--status-low-border)';
+
+              return (
+                <div 
+                  key={c.terminal_id}
+                  style={{
+                    backgroundColor: badgeBg,
+                    border: `1px solid ${borderColor}`,
+                    borderRadius: 'var(--radius-md)',
+                    padding: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)' }}>
+                      {c.terminal_id}
+                    </span>
+                    <span style={{ 
+                      fontSize: '0.68rem', 
+                      fontWeight: 700, 
+                      color: badgeColor, 
+                      textTransform: 'uppercase' 
+                    }}>
+                      {lvl}
+                    </span>
+                  </div>
+
+                  <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                    {c.terminal_name}
+                  </p>
+
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                    Wait: <strong style={{ color: 'var(--text-primary)' }}>{c.predicted_wait_hours || 2}h</strong> • Berths: <strong style={{ color: 'var(--text-primary)' }}>{c.available_berths}</strong>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 6. Vessel Fleet Table Section */}
       <div className="glass-panel" style={{ padding: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
           <div>
@@ -519,7 +584,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* 6. 72-Hour Operations Plan Feature */}
+      {/* 7. 72-Hour Operations Plan Feature */}
       <Plan72HourTable />
 
     </motion.div>
