@@ -43,11 +43,11 @@ export default function Congestion() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
         <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
-            <Activity size={22} color="var(--color-primary)" />
-            Terminal Congestion & Bottleneck Analysis
+          <h2 className="page-title">
+            <Activity size={20} color="var(--color-primary)" />
+            Terminal Congestion &amp; Bottleneck Analysis
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '2px' }}>
+          <p className="page-subtitle">
             Random Forest ML predictions evaluating queue build-up, delay probabilities, and berth availability.
           </p>
         </div>

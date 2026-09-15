@@ -44,11 +44,11 @@ export default function Routing() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Header */}
       <div>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
-          <GitFork size={22} color="var(--color-primary)" />
-          Alternate Routing & Congestion Mitigation
+        <h2 className="page-title">
+          <GitFork size={20} color="var(--color-primary)" />
+          Alternate Routing &amp; Congestion Mitigation
         </h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '2px' }}>
+        <p className="page-subtitle">
           Evaluate weighted multi-criteria routing scores balancing congestion penalties, turnaround wait times, and berth availability.
         </p>
       </div>
@@ -91,9 +91,9 @@ export default function Routing() {
 
             {/* Terminal Alternatives Matrix */}
             <div className="glass-panel" style={{ padding: '20px' }}>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '12px' }}>
-                Terminal Feasibility & Congestion Evaluation
-              </h3>
+              <h3 className="section-heading" style={{ marginBottom: '12px' }}>
+                  Terminal Feasibility &amp; Congestion Evaluation
+                </h3>
               <div style={{ overflowX: 'auto' }}>
                 <table className="data-table">
                   <thead>
