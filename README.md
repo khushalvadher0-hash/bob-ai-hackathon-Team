@@ -54,7 +54,7 @@ Service Layer (vessel, congestion, routing, operations)
        ▼
 72-Hour Planner & Data Store (SQLite / CSV)
 ```
-
+We built a modular, explainable AI and optimization decision-support platform that forecasts terminal congestion levels via a Random Forest machine learning classifier, computes dynamic multi-criteria rerouting recommendations for incoming vessels, and executes priority-aware greedy scheduling to generate non-overlapping berth and crane assignments over a rolling 72-hour operational planning horizon.
 ---
 
 ## ✨ Key Features
@@ -81,9 +81,9 @@ Service Layer (vessel, congestion, routing, operations)
 ---
 
 ## 📂 Repository Structure
-
 ```
 ├── src/                  # All source code
+```
 ├── backend/
 │   ├── api/             # FastAPI REST endpoints (/api/vessels, /api/congestion, /api/routes, /api/operations)
 │   ├── models/          # Pydantic data schemas
@@ -117,13 +117,13 @@ Service Layer (vessel, congestion, routing, operations)
 │   └── live-demo-url.txt    # Live demo URL
 ├── presentation/         # Slide deck
 └── submission.yaml       # Structured submission metadata
+├── docs/                # Architecture, API, ML & optimization specs
+└── demo/                # Sample input and output JSON artifacts
 ```
 
 ---
 
-## ⚡ How to Run
-
-> See [`docs/setup-guide.md`](docs/setup-guide.md) for full setup instructions.
+## 🚀 Getting Started
 
 ### 1. Backend Setup
 ```bash
@@ -140,6 +140,14 @@ cp backend/.env.example backend/.env
 
 # 4. Run the Backend API
 uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+
+# 4. Run the Backend API
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+
+# 5. Run the Frontend (in a separate terminal)
+cd frontend
+npm install
+npm run dev
 ```
 Backend API will be accessible at: `http://127.0.0.1:8000`  
 Swagger API Docs: `http://127.0.0.1:8000/docs`
