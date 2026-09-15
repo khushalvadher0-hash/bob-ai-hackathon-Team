@@ -7,6 +7,7 @@ import Vessels from './pages/Vessels';
 import Congestion from './pages/Congestion';
 import Routing from './pages/Routing';
 import Operations from './pages/Operations';
+import Alerts from './pages/Alerts';
 
 export default function App() {
   const handleRefresh = () => {
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/congestion" element={<Congestion />} />
           <Route path="/routing" element={<Routing />} />
           <Route path="/operations" element={<Operations />} />
+          <Route path="/alerts" element={<Alerts />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

@@ -251,10 +251,7 @@ export default function Plan72HourTable() {
                       >
                         {/* Time */}
                         <td style={{ padding: '12px 16px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <Clock size={14} color="var(--text-muted)" />
-                            <span>{timeStr}</span>
-                          </div>
+                          <span>{timeStr}</span>
                         </td>
 
                         {/* Vessel */}
@@ -271,7 +268,6 @@ export default function Plan72HourTable() {
                             <span style={{
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: '4px',
                               padding: '3px 9px',
                               background: 'var(--color-primary-light)',
                               color: 'var(--color-primary)',
@@ -280,7 +276,6 @@ export default function Plan72HourTable() {
                               fontSize: '0.78rem',
                               border: '1px solid rgba(2, 132, 199, 0.2)'
                             }}>
-                              <Anchor size={12} />
                               <span>{berthStr}</span>
                             </span>
                             <span className="tooltip-box">
@@ -295,7 +290,6 @@ export default function Plan72HourTable() {
                             <span style={{
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: '4px',
                               padding: '3px 9px',
                               background: 'rgba(99, 102, 241, 0.08)',
                               color: 'var(--color-accent)',
@@ -304,38 +298,44 @@ export default function Plan72HourTable() {
                               fontSize: '0.78rem',
                               border: '1px solid rgba(99, 102, 241, 0.2)'
                             }}>
-                              <Hammer size={12} />
                               <span>{cranesCount} Cranes</span>
                             </span>
                             <span className="tooltip-box">
-                              {cranesCount * 35} TEU/hr total move rate assigned by TEU tier.
+                              Quay crane dispatch based on vessel container volume.
                             </span>
                           </div>
                         </td>
 
                         {/* Status */}
-                        <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                          {isConflict ? (
-                            <span className="badge badge-critical pulse-high" style={{ fontWeight: 800 }}>
-                              <AlertTriangle size={12} />
-                              <span>{statusStr}</span>
-                            </span>
-                          ) : isQueued ? (
-                            <span className="badge badge-high">
-                              <Clock size={11} />
-                              <span>{statusStr}</span>
-                            </span>
-                          ) : isApproaching ? (
-                            <span className="badge badge-medium">
-                              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor' }} />
-                              <span>{statusStr}</span>
-                            </span>
-                          ) : (
-                            <span className="badge badge-low">
-                              <CheckCircle2 size={12} />
-                              <span>{statusStr}</span>
-                            </span>
-                          )}
+                        <td style={{ padding: '12px 16px' }}>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              padding: '3px 9px',
+                              borderRadius: '9999px',
+                              background: isConflict
+                                ? 'var(--status-critical-bg)'
+                                : isQueued
+                                ? 'var(--status-high-bg)'
+                                : isApproaching
+                                ? 'var(--color-primary-light)'
+                                : 'var(--status-low-bg)',
+                              color: isConflict
+                                ? 'var(--status-critical)'
+                                : isQueued
+                                ? 'var(--status-high)'
+                                : isApproaching
+                                ? 'var(--color-primary)'
+                                : 'var(--status-low)'
+                            }}
+                          >
+                            <span style={{ fontSize: '0.65rem' }}>●</span>
+                            <span>{statusStr}</span>
+                          </span>
                         </td>
                       </motion.tr>
                     );

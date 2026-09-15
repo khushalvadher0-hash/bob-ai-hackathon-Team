@@ -1,15 +1,18 @@
+import { cleanText } from './cleanText';
+
 export function formatDate(dateString) {
-  if (!dateString) return 'N/A';
+  if (!dateString) return '-';
   try {
-    const d = new Date(dateString);
-    return d.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
+    const cleaned = cleanText(dateString);
+    const d = new Date(cleaned);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleString();
+    }
+    return cleaned;
   } catch {
-    return dateString;
+    return cleanText(dateString);
   }
 }
+
+export default formatDate;
+

@@ -12,6 +12,7 @@ import {
   ArrowRight, 
   Sparkles,
   Play, 
+  Pause,
   Cpu, 
   ShieldAlert, 
   Zap, 
@@ -35,7 +36,7 @@ import {
 } from '../services/api';
 import { vesselsData } from '../data/vesselsData';
 import { formatDate } from '../utils/formatDate';
-import { cleanValue } from '../utils/cleanValue';
+import { cleanText } from '../utils/cleanText';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
@@ -47,9 +48,19 @@ export default function Dashboard() {
   const [optimizationResult, setOptimizationResult] = useState(null);
   const [runningOptimization, setRunningOptimization] = useState(false);
   const [loadingScenario, setLoadingScenario] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [simTick, setSimTick] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  // Task 4: Terminal overview data (default percentages)
+  const [terminalCapacities, setTerminalCapacities] = useState({
+    T1: { name: 'North Deepwater', pct: 90, status: 'Critical', color: '#ef4444' },
+    T2: { name: 'East Container', pct: 60, status: 'Moderate', color: '#f59e0b' },
+    T3: { name: 'South Deepwater', pct: 25, status: 'Available', color: '#10b981' },
+    T4: { name: 'Feeder Basin', pct: 40, status: 'Available', color: '#10b981' }
+  });
 
   const loadData = async () => {
     setLoading(true);
@@ -72,7 +83,6 @@ export default function Dashboard() {
       if (optData) {
         setOptimizationResult(optData);
       } else {
-        // Default smart fallback
         setOptimizationResult({
           congestion_level: "HIGH",
           congestion_score: 80.2,
@@ -89,7 +99,6 @@ export default function Dashboard() {
         });
       }
 
-      // Fetch sample recommendations for high-risk vessels
       const highRisk = vesselList.filter(v => {
         const r = String(v.risk_level || v.priority || '').toUpperCase();
         return r === 'HIGH' || r === 'CRITICAL';
@@ -115,11 +124,43 @@ export default function Dashboard() {
     loadData();
   }, []);
 
+  // Task 5: Live Simulation Feel (Every 5 seconds updates vessel status & congestion)
+  useEffect(() => {
+    if (!isSimulating) return;
+
+    const interval = setInterval(() => {
+      setSimTick(prev => prev + 1);
+
+      // Cycle vessel status
+      setVessels(prevVessels => {
+        const statusCycle = ['APPROACHING', 'QUEUED', 'BERTHED', 'DEPARTED'];
+        return prevVessels.map((v, i) => {
+          // Select a vessel to update every tick
+          if (i % 3 === (simTick % 3)) {
+            const currentIdx = statusCycle.indexOf(cleanText(v.status).toUpperCase());
+            const nextStatus = statusCycle[(currentIdx + 1) % statusCycle.length];
+            return { ...v, status: nextStatus };
+          }
+          return v;
+        });
+      });
+
+      // Update terminal capacities slightly to simulate live sensor fluctuations
+      setTerminalCapacities(prev => ({
+        T1: { ...prev.T1, pct: Math.min(96, Math.max(82, prev.T1.pct + (Math.random() > 0.5 ? 2 : -2))) },
+        T2: { ...prev.T2, pct: Math.min(75, Math.max(50, prev.T2.pct + (Math.random() > 0.5 ? 3 : -3))) },
+        T3: { ...prev.T3, pct: Math.min(45, Math.max(20, prev.T3.pct + (Math.random() > 0.5 ? 2 : -2))) },
+        T4: { ...prev.T4, pct: Math.min(55, Math.max(30, prev.T4.pct + (Math.random() > 0.5 ? 3 : -3))) }
+      }));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isSimulating, simTick]);
+
   // Task 1: Realistic AI Optimization with Loading State & Smooth Reveal
   const handleRunOptimization = async () => {
     setRunningOptimization(true);
     try {
-      // Simulate intelligent neural processing delay (1.5s)
       await new Promise(resolve => setTimeout(resolve, 1500));
       const res = await getOptimizationResult();
       setOptimizationResult(res);
@@ -137,7 +178,7 @@ export default function Dashboard() {
     }
   };
 
-  // Task 9: Load Demo Scenario (Critical for Judges Presentation)
+  // Demo Scenario Button
   const handleLoadDemoScenario = async () => {
     setLoadingScenario(true);
     try {
@@ -163,7 +204,7 @@ export default function Dashboard() {
     }
   };
 
-  if (loading) return <LoadingSpinner message="Aggregating Port Telemetry & Initializing AI Optimization Engine..." />;
+  if (loading) return <LoadingSpinner message="Aggregating Port Telemetry & Initializing Port Management System..." />;
 
   // KPI Calculations
   const totalVessels = vessels.length;
@@ -183,7 +224,6 @@ export default function Dashboard() {
   const availableBerths = berths.filter(b => b.status === 'AVAILABLE' || b.available === true).length || 3;
   const totalCranes = berths.reduce((sum, b) => sum + (Number(b.crane_count) || 3), 0) || 29;
 
-  // Result card color & level handling
   const resultLevel = String(optimizationResult?.congestion_level || 'HIGH').toUpperCase();
   const isHigh = resultLevel === 'HIGH' || resultLevel === 'CRITICAL';
   const isMed = resultLevel === 'MEDIUM';
@@ -195,7 +235,7 @@ export default function Dashboard() {
       transition={{ duration: 0.4 }}
       style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
     >
-      {/* 1. Hero Header (First Impression) */}
+      {/* 1. Hero Header */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -207,33 +247,60 @@ export default function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Anchor size={28} color="var(--color-primary)" />
-              Port Congestion Optimizer
+              Port Operations Command Centre
             </h1>
-            {/* Live Simulation Badge */}
+            {/* Live Simulation Status Badge */}
             <span style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
               padding: '3px 10px',
               borderRadius: '9999px',
-              background: 'var(--status-low-bg)',
-              color: 'var(--status-low-text)',
-              border: '1px solid var(--status-low-border)',
+              background: isSimulating ? '#ecfdf5' : 'var(--status-low-bg)',
+              color: isSimulating ? '#047857' : 'var(--status-low-text)',
+              border: `1px solid ${isSimulating ? '#a7f3d0' : 'var(--status-low-border)'}`,
               fontSize: '0.72rem',
               fontWeight: 800,
               letterSpacing: '0.04em'
             }}>
-              <span className="pulse-live" style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: 'var(--status-low)' }} />
-              LIVE SIMULATION
+              <span className="pulse-live" style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#10b981' }} />
+              {isSimulating ? `LIVE SIMULATION (TICK ${simTick})` : 'PORT SYSTEM READY'}
             </span>
           </div>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '4px', fontWeight: 500 }}>
-            AI-Powered Port Congestion Prediction & Optimization System
+            AI-Powered Port Congestion Prediction &amp; Real-Time Operations Management
           </p>
         </div>
 
         {/* Action Buttons Toolbar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          
+          {/* Task 5: Start/Pause Simulation Button */}
+          <button
+            className="btn"
+            onClick={() => setIsSimulating(prev => !prev)}
+            style={{
+              padding: '9px 16px',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              background: isSimulating ? '#ecfdf5' : '#ffffff',
+              border: `1px solid ${isSimulating ? '#10b981' : 'var(--border-color)'}`,
+              color: isSimulating ? '#047857' : 'var(--text-primary)'
+            }}
+          >
+            {isSimulating ? (
+              <>
+                <Pause size={14} color="#047857" />
+                <span>Pause Simulation</span>
+              </>
+            ) : (
+              <>
+                <Play size={14} color="var(--color-primary)" />
+                <span>Start Simulation</span>
+              </>
+            )}
+          </button>
+
           {/* Demo Scenario Button */}
           <button
             className="btn"
@@ -323,7 +390,99 @@ export default function Dashboard() {
         />
       </motion.div>
 
-      {/* 3. VERY IMPORTANT: RESULT CARD (Smart AI Optimization Outcome) */}
+      {/* Task 4: Terminal Overview (Progress Bars) */}
+      <div className="glass-panel" style={{ padding: '20px 24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+          <div>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Layers size={18} color="var(--color-primary)" />
+              Terminal Capacity &amp; Utilization Overview
+            </h3>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+              Live berth occupancy and zone saturation progress across port terminal sectors.
+            </p>
+          </div>
+          <Link to="/congestion" style={{ color: 'var(--color-primary)', fontSize: '0.78rem', textDecoration: 'none', fontWeight: 700 }}>
+            Full Terminal Surveillance →
+          </Link>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '14px'
+        }}>
+          {/* Terminal T1 */}
+          <div style={{ background: '#f8fafc', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--text-primary)' }}>Terminal T1</span>
+              <span style={{ fontWeight: 800, fontSize: '0.82rem', color: '#ef4444' }}>{terminalCapacities.T1.pct}% Full</span>
+            </div>
+            <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '1px' }}>{terminalCapacities.T1.name}</p>
+            {/* Progress bar */}
+            <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden', margin: '8px 0' }}>
+              <div style={{ width: `${terminalCapacities.T1.pct}%`, height: '100%', backgroundColor: '#ef4444', borderRadius: '9999px', transition: 'width 0.5s ease' }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              <span>1 Berth Vacant</span>
+              <span style={{ color: '#b91c1c', fontWeight: 700 }}>Critical Congestion</span>
+            </div>
+          </div>
+
+          {/* Terminal T2 */}
+          <div style={{ background: '#f8fafc', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--text-primary)' }}>Terminal T2</span>
+              <span style={{ fontWeight: 800, fontSize: '0.82rem', color: '#f59e0b' }}>{terminalCapacities.T2.pct}% Full</span>
+            </div>
+            <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '1px' }}>{terminalCapacities.T2.name}</p>
+            {/* Progress bar */}
+            <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden', margin: '8px 0' }}>
+              <div style={{ width: `${terminalCapacities.T2.pct}%`, height: '100%', backgroundColor: '#f59e0b', borderRadius: '9999px', transition: 'width 0.5s ease' }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              <span>2 Berths Vacant</span>
+              <span style={{ color: '#b45309', fontWeight: 700 }}>Moderate Traffic</span>
+            </div>
+          </div>
+
+          {/* Terminal T3 */}
+          <div style={{ background: '#f8fafc', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--text-primary)' }}>Terminal T3</span>
+              <span style={{ fontWeight: 800, fontSize: '0.82rem', color: '#10b981' }}>Available ({terminalCapacities.T3.pct}%)</span>
+            </div>
+            <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '1px' }}>{terminalCapacities.T3.name}</p>
+            {/* Progress bar */}
+            <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden', margin: '8px 0' }}>
+              <div style={{ width: `${terminalCapacities.T3.pct}%`, height: '100%', backgroundColor: '#10b981', borderRadius: '9999px', transition: 'width 0.5s ease' }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              <span>3 Berths Ready</span>
+              <span style={{ color: '#047857', fontWeight: 700 }}>Ready for Inbound Reroute</span>
+            </div>
+          </div>
+
+          {/* Terminal T4 */}
+          <div style={{ background: '#f8fafc', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--text-primary)' }}>Terminal T4</span>
+              <span style={{ fontWeight: 800, fontSize: '0.82rem', color: '#10b981' }}>Available ({terminalCapacities.T4.pct}%)</span>
+            </div>
+            <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '1px' }}>{terminalCapacities.T4.name}</p>
+            {/* Progress bar */}
+            <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden', margin: '8px 0' }}>
+              <div style={{ width: `${terminalCapacities.T4.pct}%`, height: '100%', backgroundColor: '#10b981', borderRadius: '9999px', transition: 'width 0.5s ease' }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              <span>2 Berths Ready</span>
+              <span style={{ color: '#047857', fontWeight: 700 }}>Nominal Flow</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. RESULT CARD (Smart AI Optimization Outcome) */}
       <AnimatePresence mode="wait">
         {runningOptimization ? (
           <motion.div
@@ -400,7 +559,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <h3 style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '4px' }}>
-                  {cleanValue(optimizationResult.terminal || 'North Deepwater Terminal')}
+                  {cleanText(optimizationResult.terminal || 'North Deepwater Terminal')}
                 </h3>
               </div>
 
@@ -424,7 +583,7 @@ export default function Dashboard() {
                 <div style={{ background: 'var(--bg-card-subtle)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Assigned Berth</p>
                   <p style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-primary)', marginTop: '2px' }}>
-                    Berth {cleanValue(optimizationResult.assigned_berth || 'B01')}
+                    Berth {cleanText(optimizationResult.assigned_berth || 'B01')}
                   </p>
                 </div>
                 <span className="tooltip-box">
@@ -436,7 +595,7 @@ export default function Dashboard() {
                 <div style={{ background: 'var(--bg-card-subtle)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Assigned Cranes</p>
                   <p style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-accent)', marginTop: '2px' }}>
-                    {cleanValue(optimizationResult.assigned_cranes || 4)} Gantry Units
+                    {cleanText(optimizationResult.assigned_cranes || 4)} Gantry Units
                   </p>
                 </div>
                 <span className="tooltip-box">
@@ -448,7 +607,7 @@ export default function Dashboard() {
                 <div style={{ background: 'var(--bg-card-subtle)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Terminal Facility</p>
                   <p style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '4px' }}>
-                    {cleanValue(optimizationResult.terminal || 'Deepwater Facility')}
+                    {cleanText(optimizationResult.terminal || 'Deepwater Facility')}
                   </p>
                 </div>
                 <span className="tooltip-box">
@@ -473,7 +632,7 @@ export default function Dashboard() {
                   AI Decision Logic (WHY)
                 </span>
                 <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600, marginTop: '3px', lineHeight: '1.4' }}>
-                  {cleanValue(optimizationResult.explanation || optimizationResult.why || optimizationResult.recommendation)}
+                  {cleanText(optimizationResult.explanation || optimizationResult.why || optimizationResult.recommendation)}
                 </p>
               </div>
             </div>
@@ -486,81 +645,13 @@ export default function Dashboard() {
         <AIInsightsCard insights={optimizationResult.insights} />
       )}
 
-      {/* 5. Port Congestion Hotspots Overview */}
-      {congestion.length > 0 && (
-        <div className="glass-panel" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <div>
-              <h3 className="section-heading">Port Congestion Hotspots</h3>
-              <p className="section-subheading">AI-predicted bottleneck status and berth zone saturation</p>
-            </div>
-            <Link to="/congestion" style={{ color: 'var(--color-primary)', fontSize: '0.75rem', textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}>
-              Full Forecast →
-            </Link>
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-            gap: '10px'
-          }}>
-            {congestion.map(c => {
-              const lvl = String(c.congestion_level || 'LOW').toUpperCase();
-              const isCrit = lvl === 'CRITICAL' || lvl === 'HIGH';
-              const isMed = lvl === 'MEDIUM';
-
-              const badgeColor = isCrit ? 'var(--status-critical)' : isMed ? 'var(--status-med)' : 'var(--status-low)';
-              const badgeBg = isCrit ? 'var(--status-critical-bg)' : isMed ? 'var(--status-med-bg)' : 'var(--status-low-bg)';
-              const borderColor = isCrit ? 'var(--status-critical-border)' : isMed ? 'var(--status-med-border)' : 'var(--status-low-border)';
-
-              return (
-                <div 
-                  key={c.terminal_id}
-                  style={{
-                    backgroundColor: badgeBg,
-                    border: `1px solid ${borderColor}`,
-                    borderRadius: 'var(--radius-md)',
-                    padding: '12px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)' }}>
-                      {c.terminal_id}
-                    </span>
-                    <span style={{ 
-                      fontSize: '0.68rem', 
-                      fontWeight: 700, 
-                      color: badgeColor, 
-                      textTransform: 'uppercase' 
-                    }}>
-                      {lvl}
-                    </span>
-                  </div>
-
-                  <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-                    {c.terminal_name}
-                  </p>
-
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                    Wait: <strong style={{ color: 'var(--text-primary)' }}>{c.predicted_wait_hours || 2}h</strong> • Berths: <strong style={{ color: 'var(--text-primary)' }}>{c.available_berths}</strong>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 6. Vessel Fleet Table Section */}
+      {/* 5. Inbound & Queue Vessel Manifest */}
       <div className="glass-panel" style={{ padding: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
           <div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Ship size={20} color="var(--color-primary)" />
-              Inbound & Queue Vessel Manifest
+              Inbound &amp; Queue Vessel Manifest
             </h3>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
               Live container vessels ordered by priority ETA and container volume.
@@ -584,7 +675,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* 7. 72-Hour Operations Plan Feature */}
+      {/* 6. 72-Hour Operations Plan Feature */}
       <Plan72HourTable />
 
     </motion.div>

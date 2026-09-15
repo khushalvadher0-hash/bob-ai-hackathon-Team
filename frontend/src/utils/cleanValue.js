@@ -1,3 +1,8 @@
+export function cleanText(value) {
+  if (value === null || value === undefined) return "";
+  return value.toString().replace(/svg/gi, "").trim();
+}
+
 /**
  * Utility to clean string values and remove unwanted prefixes like "svg", "<svg>", or stray tokens.
  * @param {any} val
@@ -9,17 +14,9 @@ export function cleanValue(val) {
   }
 
   let str = String(val).trim();
-
-  // Strip leading "svg" prefix if present (case-insensitive)
-  // e.g. "svgB01" -> "B01", "svgScheduled" -> "Scheduled", "svg2026-09-15" -> "2026-09-15"
-  if (/^svg/i.test(str)) {
-    str = str.replace(/^svg\s*[-_:]?\s*/i, '');
-  }
-
-  // Remove any stray html/svg tag fragments
-  str = str.replace(/<[^>]*>/g, '');
-
+  str = str.replace(/svg/gi, '').replace(/<[^>]*>/g, '');
   return str.trim();
 }
 
 export default cleanValue;
+

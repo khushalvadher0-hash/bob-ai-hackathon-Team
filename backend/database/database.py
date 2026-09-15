@@ -25,14 +25,14 @@ _db: Optional[Database] = None
 def get_client() -> MongoClient:
     """
     Returns a shared singleton MongoClient instance.
-    Sets a 5-second serverSelectionTimeoutMS so the application does not hang.
+    Sets a fast 800ms timeout so the application never hangs when offline/falling back.
     """
     global _client
     if _client is None:
         _client = MongoClient(
             MONGODB_URI,
-            serverSelectionTimeoutMS=5000,
-            connectTimeoutMS=5000
+            serverSelectionTimeoutMS=800,
+            connectTimeoutMS=800
         )
     return _client
 
