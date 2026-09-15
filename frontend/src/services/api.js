@@ -9,11 +9,11 @@ const client = axios.create({
   },
 });
 
-// Normalized helper to handle array or { count, vessels: [] }
+// Normalized helper to get vessels (handles direct array or { count, vessels: [] })
 export const getVessels = async () => {
   const res = await client.get('/api/vessels');
   if (Array.isArray(res.data)) {
-    return Array.isArray(res.data) ? res.data : (res.data.vessels || []);
+    return res.data;
   }
   if (res.data && Array.isArray(res.data.vessels)) {
     return res.data.vessels;
@@ -26,10 +26,10 @@ export const getVesselById = async (id) => {
   return res.data;
 };
 
-// Aliased for backwards compatibility
+// Alias for backwards compatibility
 export const getVessel = getVesselById;
 
-// Normalized helper to handle array or { count, predictions: [] }
+// Normalized helper to get congestion predictions
 export const getCongestion = async () => {
   const res = await client.get('/api/congestion');
   return res.data;
@@ -40,28 +40,40 @@ export const getTerminalCongestion = async (terminalId) => {
   return res.data;
 };
 
-// Functions for Person 4 future integration
+// Person 4: Route recommendations
 export const getRouteRecommendation = async (vesselId) => {
   const res = await client.get(`/api/routes/${vesselId}`);
   return res.data;
 };
 
-export const getOperations72h = async () => {
+export const getAllRouteRecommendations = async () => {
+  const res = await client.get('/api/routes');
+  return res.data;
+};
+
+// Person 4: 72-Hour Operations Plan
+export const get72HourOperations = async () => {
   const res = await client.get('/api/operations/72h');
   return res.data;
 };
+export const getOperations72h = get72HourOperations;
 
-export const getBerths = async () => {
+// Person 4: Berth Schedule
+export const getBerthSchedule = async () => {
   const res = await client.get('/api/operations/berths');
-  return res.data;
+  return Array.isArray(res.data) ? res.data : (res.data?.berths || res.data?.schedule || []);
 };
+export const getBerths = getBerthSchedule;
 
-export const getCranes = async () => {
+// Person 4: Crane Allocation
+export const getCraneAllocation = async () => {
   const res = await client.get('/api/operations/cranes');
-  return res.data;
+  return Array.isArray(res.data) ? res.data : (res.data?.cranes || []);
 };
+export const getCranes = getCraneAllocation;
 
 export const getHealth = async () => {
   const res = await client.get('/health');
   return res.data;
 };
+
