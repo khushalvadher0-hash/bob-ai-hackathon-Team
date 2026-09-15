@@ -1,9 +1,11 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pathlib import Path
 import pandas as pd
 from ..database.database import get_database
-from .vessel_service import get_all_vessels
+from .vessel_service import get_all_vessels, get_vessel_by_id
 from .congestion_service import get_terminal_congestion_status
+from .routing_service import get_all_routing_recommendations_service
+from ..optimization.berth_optimizer import optimize_berth_assignments
 from ..planner.planner_72h import generate_72h_operations_plan
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,6 +31,62 @@ def get_berths_data() -> List[Dict[str, Any]]:
         return df.to_dict(orient="records")
     return []
 
+def get_optimized_berths_service() -> Dict[str, Any]:
+    """
+    Computes real-time optimized berth schedule using actual MongoDB/CSV vessel and berth data,
+    incorporating alternate routing recommendations where appropriate.
+    Persists resulting schedule into the 'operations' MongoDB collection.
+    """
+    vessels = get_all_vessels()
+    berths = get_berths_data()
+
+    # Collect routing recommendations to align target terminals
+    routes_list = get_all_routing_recommendations_service()
+    routing_map = {r["vessel_id"]: r for r in routes_list if "vessel_id" in r}
+
+    optimized_result = optimize_berth_assignments(vessels, berths, routing_recommendations=routing_map)
+
+    # Persist optimized assignments into MongoDB operations collection
+    try:
+        db = get_database()
+        for item in optimized_result.get("schedule", []):
+            op_doc = {
+                "vessel_id": item.get("vessel_id"),
+                "vessel_name": item.get("vessel_name"),
+                "terminal_id": item.get("terminal_id"),
+                "berth_id": item.get("berth_id"),
+                "berth_name": item.get("berth_name"),
+                "cranes": item.get("cranes"),
+                "arrival_time": item.get("arrival_time"),
+                "start_time": item.get("start_time"),
+                "end_time": item.get("end_time"),
+                "duration_hours": item.get("duration_hours"),
+                "estimated_wait_hours": item.get("estimated_wait_hours"),
+                "berth_score": item.get("berth_score"),
+                "status": "ASSIGNED",
+                "priority": item.get("priority", "MEDIUM")
+            }
+            db.operations.update_one(
+                {"vessel_id": item.get("vessel_id")},
+                {"$set": op_doc},
+                upsert=True
+            )
+    except Exception as e:
+        print(f"Notice: operational berth MongoDB persistence ({e})")
+
+    return optimized_result
+
+def get_vessel_berth_assignment_service(vessel_id: str) -> Optional[Dict[str, Any]]:
+    """Retrieves optimized berth assignment for a single vessel."""
+    schedule_data = get_optimized_berths_service()
+    for item in schedule_data.get("schedule", []):
+        if str(item.get("vessel_id", "")).upper() == vessel_id.strip().upper():
+            return item
+    for item in schedule_data.get("unassigned", []):
+        if str(item.get("vessel_id", "")).upper() == vessel_id.strip().upper():
+            return item
+    return None
+
 def get_cranes_data() -> List[Dict[str, Any]]:
     """Generates crane asset list based on berths collection."""
     berths = get_berths_data()
@@ -51,8 +109,7 @@ def get_cranes_data() -> List[Dict[str, Any]]:
 
 def get_72h_plan_service() -> Dict[str, Any]:
     """
-    Computes rolling 72-hour operational plan and persists the assignments into
-    the MongoDB 'operations' collection.
+    Computes rolling 72-hour operational plan and persists assignments.
     """
     vessels = get_all_vessels()
     berths = get_berths_data()
@@ -60,31 +117,6 @@ def get_72h_plan_service() -> Dict[str, Any]:
     cong_map = {t["terminal_id"]: t for t in terminals}
 
     plan = generate_72h_operations_plan(vessels, berths, cong_map)
-
-    # Persist the operations into MongoDB
-    try:
-        db = get_database()
-        for item in plan.get("schedule", []):
-            op_doc = {
-                "vessel_id": item.get("vessel_id"),
-                "vessel_name": item.get("vessel_name"),
-                "terminal_id": item.get("terminal_id"),
-                "berth_id": item.get("berth_id"),
-                "cranes": item.get("cranes"),
-                "start_time": item.get("start_time"),
-                "end_time": item.get("end_time"),
-                "action": item.get("action", "BERTH_ASSIGNED"),
-                "status": "PLANNED",
-                "priority": item.get("priority", "MEDIUM")
-            }
-            db.operations.update_one(
-                {"vessel_id": item.get("vessel_id")},
-                {"$set": op_doc},
-                upsert=True
-            )
-    except Exception as e:
-        print(f"Notice: operational plan MongoDB persistence ({e})")
-
     return plan
 
 def save_operation(operation_data: Dict[str, Any]) -> Dict[str, Any]:
