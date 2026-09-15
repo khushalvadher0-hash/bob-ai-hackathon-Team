@@ -138,11 +138,42 @@ export default function Dashboard() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       
+      {/* Page Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <h2 style={{
+            fontSize: '1.3rem',
+            fontWeight: 800,
+            color: 'var(--text-primary)',
+            letterSpacing: '-0.02em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px'
+          }}>
+            <span style={{
+              width: '4px',
+              height: '22px',
+              backgroundColor: 'var(--color-primary)',
+              borderRadius: '2px',
+              display: 'inline-block'
+            }} />
+            Port Operations Overview
+          </h2>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '3px', marginLeft: '14px' }}>
+            Live multi-terminal monitoring · Congestion forecasting · 72-hour optimization
+          </p>
+        </div>
+        <button className="btn" onClick={loadData} style={{ fontSize: '0.75rem', padding: '5px 11px' }}>
+          <RefreshCw size={12} />
+          <span>Refresh</span>
+        </button>
+      </div>
+
       {/* 4 Top KPI Cards */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
-        gap: '14px' 
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+        gap: '12px'
       }}>
         <StatCard
           title="Total Vessels (Next 72h)"
@@ -189,14 +220,10 @@ export default function Dashboard() {
         <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
             <div>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                Port Congestion Hotspots
-              </h3>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                AI-predicted bottleneck status and berth zone saturation
-              </p>
+              <h3 className="section-heading">Port Congestion Hotspots</h3>
+              <p className="section-subheading">AI-predicted bottleneck status and berth zone saturation</p>
             </div>
-            <Link to="/congestion" style={{ color: 'var(--color-primary)', fontSize: '0.78rem', textDecoration: 'none', fontWeight: 600 }}>
+            <Link to="/congestion" style={{ color: 'var(--color-primary)', fontSize: '0.75rem', textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}>
               Full Forecast →
             </Link>
           </div>
@@ -291,11 +318,11 @@ export default function Dashboard() {
         {/* Right: Alerts & Insights Panel */}
         <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <AlertTriangle size={16} color="var(--status-high)" />
-              Alerts & Insights
+            <h3 className="section-heading" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <AlertTriangle size={14} color="var(--status-high)" />
+              Alerts &amp; Insights
             </h3>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Live Feed</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Live Feed</span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
@@ -364,14 +391,10 @@ export default function Dashboard() {
         <div className="glass-panel" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <div>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                Vessel Schedule & Congestion Risk
-              </h3>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Prioritized arrival queue & operational status
-              </p>
+              <h3 className="section-heading">Vessel Schedule &amp; Congestion Risk</h3>
+              <p className="section-subheading">Prioritized arrival queue &amp; operational status</p>
             </div>
-            <Link to="/vessels" style={{ color: 'var(--color-primary)', fontSize: '0.78rem', textDecoration: 'none', fontWeight: 600 }}>
+            <Link to="/vessels" style={{ color: 'var(--color-primary)', fontSize: '0.75rem', textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}>
               View Fleet ({vessels.length}) →
             </Link>
           </div>
@@ -429,14 +452,10 @@ export default function Dashboard() {
         <div className="glass-panel" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <div>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                72-Hour Port Operations Plan
-              </h3>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Optimized berth docking & crane assignment timeline
-              </p>
+              <h3 className="section-heading">72-Hour Port Operations Plan</h3>
+              <p className="section-subheading">Optimized berth docking &amp; crane assignment timeline</p>
             </div>
-            <Link to="/operations" style={{ color: 'var(--color-primary)', fontSize: '0.78rem', textDecoration: 'none', fontWeight: 600 }}>
+            <Link to="/operations" style={{ color: 'var(--color-primary)', fontSize: '0.75rem', textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}>
               Full Master Plan →
             </Link>
           </div>
@@ -494,13 +513,13 @@ export default function Dashboard() {
       <div className="glass-panel" style={{ padding: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
           <div>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={16} color="var(--color-primary)" />
-              Alternate Routing Recommendations
-            </h3>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Proactive congestion avoidance by transferring arriving vessels to uncongested terminal berths
-            </p>
+            <h3 className="section-heading" style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                <Sparkles size={14} color="var(--color-primary)" />
+                Alternate Routing Recommendations
+              </h3>
+              <p className="section-subheading">
+                Proactive congestion avoidance — transferring vessels to uncongested terminal berths
+              </p>
           </div>
           <Link to="/routing" style={{ color: 'var(--color-primary)', fontSize: '0.78rem', textDecoration: 'none', fontWeight: 600 }}>
             Analyze All Routes →

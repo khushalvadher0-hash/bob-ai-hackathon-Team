@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, CheckCircle2, AlertTriangle, Clock, Zap, ShieldCheck, Gauge, Sparkles } from 'lucide-react';
+import { ArrowDown, CheckCircle2, Sparkles } from 'lucide-react';
 import RiskBadge from './RiskBadge';
 
 export default function RouteRecommendation({ recommendation }) {
@@ -28,120 +28,158 @@ export default function RouteRecommendation({ recommendation }) {
     <div
       className="glass-panel"
       style={{
-        padding: '24px',
-        borderLeft: `5px solid ${isRerouted ? 'var(--color-primary)' : 'var(--status-low)'}`
+        padding: '22px 24px',
+        borderLeft: `4px solid ${isRerouted ? 'var(--color-primary)' : 'var(--status-low)'}`
       }}
     >
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px', marginBottom: '18px' }}>
+      {/* Header Row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
         <div>
-          <span style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.04em', color: 'var(--color-primary)' }}>
-            VESSEL ID: {vessel_id}
-          </span>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>
+          <div style={{ fontSize: '0.67rem', fontWeight: 800, letterSpacing: '0.06em', color: 'var(--color-primary)', textTransform: 'uppercase', marginBottom: '2px' }}>
+            {vessel_id}
+          </div>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
             {vessel_name || vessel_id}
           </h3>
         </div>
-
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            backgroundColor: isRerouted ? 'var(--color-primary-light)' : 'var(--status-low-bg)',
-            color: isRerouted ? 'var(--color-primary)' : 'var(--status-low-text)',
-            border: `1px solid ${isRerouted ? '#bae6fd' : 'var(--status-low-border)'}`,
-            padding: '6px 14px',
-            borderRadius: '9999px',
-            fontSize: '0.8rem',
-            fontWeight: 700
-          }}
-        >
-          {isRerouted ? <Sparkles size={16} /> : <CheckCircle2 size={16} />}
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '6px',
+          backgroundColor: isRerouted ? 'var(--color-primary-light)' : 'var(--status-low-bg)',
+          color: isRerouted ? 'var(--color-primary)' : 'var(--status-low-text)',
+          border: `1px solid ${isRerouted ? '#bfdbfe' : 'var(--status-low-border)'}`,
+          padding: '5px 12px',
+          borderRadius: '9999px',
+          fontSize: '0.75rem',
+          fontWeight: 700
+        }}>
+          {isRerouted ? <Sparkles size={13} /> : <CheckCircle2 size={13} />}
           {isRerouted ? 'REROUTE RECOMMENDED' : 'MAINTAIN CURRENT TERMINAL'}
         </div>
       </div>
 
-      {/* Visual Terminal Comparison & Delay Savings Box */}
+      {/* Terminal Flow: Current → Recommended → Savings */}
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '14px',
-        backgroundColor: '#f8fafc',
+        display: 'flex',
+        alignItems: 'stretch',
+        gap: '0',
+        marginBottom: '16px',
         border: '1px solid var(--border-color)',
         borderRadius: 'var(--radius-md)',
-        padding: '16px',
-        marginBottom: '18px'
+        overflow: 'hidden',
+        background: '#f8fafc'
       }}>
-        {/* Current Destination */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-            Current Assignment
-          </span>
-          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: isRerouted ? 'var(--status-critical-text)' : 'var(--text-primary)' }}>
-            Terminal {current_terminal}
-          </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            Queuing Wait: <strong>~{current_wait_hours} hrs</strong>
-          </span>
-        </div>
-
-        {/* Transition Arrow / Recommended Destination */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-            Recommended Alternate
-          </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-primary)' }}>
-              Terminal {recommended_terminal}
-            </span>
-          </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            Turnaround Wait: <strong>~{estimated_wait_hours} hrs</strong>
-          </span>
-        </div>
-
-        {/* Delay Savings Metric */}
+        {/* Current Terminal */}
         <div style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid var(--border-color)',
-          borderRadius: 'var(--radius-md)',
-          padding: '10px 14px',
+          flex: 1,
+          padding: '14px 16px',
+          borderRight: '1px solid var(--border-color)',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center'
+          gap: '4px'
         }}>
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-            Turnaround Efficiency
+          <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>
+            Current Terminal
           </span>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--status-low-text)' }}>
-            {calculatedSavings > 0 ? `+${calculatedSavings} hrs saved` : 'Optimal Route'}
+          <div style={{
+            fontSize: '1.3rem',
+            fontWeight: 800,
+            color: isRerouted ? 'var(--status-critical-text)' : 'var(--text-primary)',
+            letterSpacing: '-0.01em'
+          }}>
+            Terminal {current_terminal}
           </div>
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
-            Reduced anchorage delay
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            Queue wait: <strong>~{current_wait_hours}h</strong>
+          </div>
+        </div>
+
+        {/* Arrow divider */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '0 12px',
+          color: 'var(--color-primary)',
+          fontSize: '1.1rem',
+          flexShrink: 0,
+          background: isRerouted ? 'var(--color-primary-light)' : '#f1f5f9',
+          borderRight: '1px solid var(--border-color)'
+        }}>
+          →
+        </div>
+
+        {/* Recommended Terminal */}
+        <div style={{
+          flex: 1,
+          padding: '14px 16px',
+          borderRight: '1px solid var(--border-color)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px'
+        }}>
+          <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>
+            Recommended Terminal
           </span>
+          <div style={{
+            fontSize: '1.3rem',
+            fontWeight: 800,
+            color: 'var(--color-primary)',
+            letterSpacing: '-0.01em'
+          }}>
+            Terminal {recommended_terminal}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            Estimated wait: <strong>~{estimated_wait_hours}h</strong>
+          </div>
+        </div>
+
+        {/* Wait Reduction */}
+        <div style={{
+          flex: 1,
+          padding: '14px 16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px',
+          background: calculatedSavings > 0 ? 'var(--status-low-bg)' : '#f8fafc'
+        }}>
+          <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>
+            Wait Reduction
+          </span>
+          <div style={{
+            fontSize: '1.3rem',
+            fontWeight: 800,
+            color: calculatedSavings > 0 ? 'var(--status-low-text)' : 'var(--text-secondary)',
+            letterSpacing: '-0.01em'
+          }}>
+            {calculatedSavings > 0 ? `+${calculatedSavings}h` : '—'}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            {calculatedSavings > 0 ? 'Saved from queue' : 'Optimal route'}
+          </div>
         </div>
       </div>
 
-      {/* Explanation / Reason Callout */}
+      {/* Reason */}
       <div style={{
-        backgroundColor: '#ffffff',
+        backgroundColor: '#f8fafc',
         border: '1px solid var(--border-color)',
         borderRadius: 'var(--radius-md)',
-        padding: '12px 16px',
-        marginBottom: '16px'
+        padding: '11px 14px',
+        marginBottom: score_breakdown && Object.keys(score_breakdown).length > 0 ? '14px' : '0'
       }}>
-        <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-          Recommendation Logic & Feasibility Justification
+        <div style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+          Routing Reason
         </div>
-        <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
           {reason}
         </p>
       </div>
 
-      {/* Weighted Score Breakdown */}
+      {/* Score Breakdown */}
       {score_breakdown && Object.keys(score_breakdown).length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '8px' }}>
           {Object.entries(score_breakdown).map(([key, val]) => (
             <div 
               key={key}
@@ -152,10 +190,10 @@ export default function RouteRecommendation({ recommendation }) {
                 padding: '8px 12px'
               }}
             >
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>
-                {key.replace('_', ' ')}
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'capitalize', letterSpacing: '0.02em' }}>
+                {key.replace(/_/g, ' ')}
               </div>
-              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>
                 {typeof val === 'number' ? val.toFixed(2) : val}
               </div>
             </div>

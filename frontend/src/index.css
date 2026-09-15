@@ -3,9 +3,9 @@
   --bg-workspace: #f1f5f9;
   --bg-card: #ffffff;
   --bg-card-subtle: #f8fafc;
-  --bg-sidebar: #0f172a;
-  --bg-sidebar-hover: rgba(255, 255, 255, 0.06);
-  --bg-sidebar-active: #0284c7;
+  --bg-sidebar: #0c1428;
+  --bg-sidebar-hover: rgba(255, 255, 255, 0.07);
+  --bg-sidebar-active: #1d4ed8;
 
   --border-color: #e2e8f0;
   --border-subtle: #cbd5e1;
@@ -16,9 +16,9 @@
   --text-muted: #64748b;
   --text-inverse: #f8fafc;
 
-  --color-primary: #0284c7;
-  --color-primary-hover: #0369a1;
-  --color-primary-light: #e0f2fe;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-light: #dbeafe;
   --color-accent: #6366f1;
 
   /* Operational Status Colors */
@@ -42,14 +42,14 @@
   --status-critical-border: #fecaca;
   --status-critical-text: #b91c1c;
 
-  --sidebar-width: 260px;
-  --navbar-height: 64px;
-  --radius-sm: 6px;
+  --sidebar-width: 256px;
+  --navbar-height: 60px;
+  --radius-sm: 5px;
   --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-lg: 10px;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-card: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08);
-  --shadow-card-hover: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -2px rgba(15, 23, 42, 0.1);
+  --shadow-card: 0 1px 3px 0 rgba(15, 23, 42, 0.07), 0 1px 2px -1px rgba(15, 23, 42, 0.05);
+  --shadow-card-hover: 0 4px 8px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -2px rgba(15, 23, 42, 0.08);
 }
 
 * {
@@ -65,6 +65,8 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 /* Base App Layout */
@@ -77,7 +79,7 @@ body {
 .main-content {
   flex: 1;
   margin-left: var(--sidebar-width);
-  padding: calc(var(--navbar-height) + 20px) 28px 32px 28px;
+  padding: calc(var(--navbar-height) + 24px) 28px 36px 28px;
   min-height: 100vh;
   background-color: var(--bg-workspace);
 }
@@ -88,7 +90,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .glass-panel:hover {
@@ -96,16 +98,55 @@ body {
   border-color: #cbd5e1;
 }
 
+/* Page header typography */
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.page-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* Section heading inside panels */
+.section-heading {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.section-subheading {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
 /* Status Badges */
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
+  gap: 4px;
+  padding: 2px 8px;
   border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .badge-low {
@@ -132,6 +173,46 @@ body {
   border: 1px solid var(--status-critical-border);
 }
 
+/* Priority chip badges (not pill-shaped) */
+.badge-priority-high {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: var(--status-high-bg);
+  color: var(--status-high-text);
+  border: 1px solid var(--status-high-border);
+}
+
+.badge-priority-medium {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: var(--status-med-bg);
+  color: var(--status-med-text);
+  border: 1px solid var(--status-med-border);
+}
+
+.badge-priority-low {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: #f1f5f9;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
 /* Clean Data Table */
 .data-table {
   width: 100%;
@@ -140,20 +221,21 @@ body {
 }
 
 .data-table th {
-  padding: 11px 14px;
+  padding: 10px 14px;
   color: var(--text-secondary);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.71rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--bg-card-subtle);
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border-color);
+  background: #f8fafc;
+  white-space: nowrap;
 }
 
 .data-table td {
-  padding: 12px 14px;
-  font-size: 0.85rem;
-  border-bottom: 1px solid var(--border-color);
+  padding: 11px 14px;
+  font-size: 0.83rem;
+  border-bottom: 1px solid #f1f5f9;
   color: var(--text-primary);
   vertical-align: middle;
 }
@@ -171,15 +253,16 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
+  padding: 6px 13px;
   border-radius: var(--radius-md);
-  font-size: 0.825rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
   border: 1px solid var(--border-color);
   background: #ffffff;
   color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 .btn:hover {
@@ -200,10 +283,48 @@ body {
   color: #ffffff;
 }
 
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 14px 0;
+}
+
+/* Terminal tag chip */
+.terminal-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: #f1f5f9;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+/* KPI value label */
+.kpi-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.kpi-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 /* Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -217,4 +338,10 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Sidebar nav hover (handled inline but provide :hover for a11y) */
+a.nav-item:hover {
+  background-color: var(--bg-sidebar-hover) !important;
+  color: #e2e8f0 !important;
 }

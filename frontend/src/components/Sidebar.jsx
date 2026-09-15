@@ -1,14 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Ship, 
   Activity, 
   GitFork, 
-  CalendarClock,
-  Radio,
-  Sliders,
-  FileText
+  CalendarClock
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -28,56 +25,64 @@ export default function Sidebar() {
       left: 0,
       top: 0,
       backgroundColor: 'var(--bg-sidebar)',
-      borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+      borderRight: '1px solid rgba(255, 255, 255, 0.06)',
       display: 'flex',
       flexDirection: 'column',
-      zIndex: 50
+      zIndex: 50,
+      overflow: 'hidden'
     }}>
       {/* Brand Header */}
       <div style={{
         height: 'var(--navbar-height)',
-        padding: '0 20px',
+        padding: '0 18px',
         display: 'flex',
         alignItems: 'center',
-        gap: '12px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+        gap: '11px',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.07)',
+        flexShrink: 0
       }}>
         <div style={{
-          width: '34px',
-          height: '34px',
-          borderRadius: '8px',
-          background: 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+          width: '32px',
+          height: '32px',
+          borderRadius: '7px',
+          background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: '#ffffff',
-          fontWeight: 800,
           fontSize: '1rem',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+          flexShrink: 0,
+          boxShadow: '0 2px 8px rgba(37, 99, 235, 0.4)'
         }}>
           ⚓
         </div>
-        <div>
-          <h2 style={{ fontSize: '0.95rem', fontWeight: 700, letterSpacing: '-0.01em', color: '#ffffff' }}>
+        <div style={{ overflow: 'hidden' }}>
+          <h2 style={{ 
+            fontSize: '0.88rem', 
+            fontWeight: 700, 
+            letterSpacing: '-0.01em', 
+            color: '#f1f5f9',
+            whiteSpace: 'nowrap'
+          }}>
             Port Optimizer
           </h2>
-          <p style={{ fontSize: '0.68rem', color: '#94a3b8', letterSpacing: '0.01em' }}>
-            Smarter Ports. Smoother Flow.
+          <p style={{ fontSize: '0.65rem', color: '#64748b', letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>
+            Smarter Ports · Smoother Flow
           </p>
         </div>
       </div>
 
       {/* Main Navigation */}
-      <nav style={{ padding: '20px 12px', display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+      <nav style={{ padding: '16px 10px 16px 10px', display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, overflow: 'auto' }}>
         <div style={{ 
-          fontSize: '0.65rem', 
+          fontSize: '0.62rem', 
           fontWeight: 700, 
           textTransform: 'uppercase', 
-          letterSpacing: '0.08em', 
-          color: '#64748b', 
-          padding: '0 12px 8px 12px' 
+          letterSpacing: '0.1em', 
+          color: '#334155', 
+          padding: '0 10px 10px 10px' 
         }}>
-          Core Operations
+          Navigation
         </div>
 
         {mainNavItems.map(({ to, label, icon: Icon }) => (
@@ -85,46 +90,56 @@ export default function Sidebar() {
             key={to}
             to={to}
             end={to === '/' || to === '/dashboard'}
+            className="nav-item"
             style={({ isActive }) => ({
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
-              padding: '10px 14px',
-              borderRadius: 'var(--radius-md)',
+              gap: '10px',
+              padding: '9px 12px',
+              borderRadius: '6px',
               textDecoration: 'none',
-              fontSize: '0.85rem',
+              fontSize: '0.83rem',
               fontWeight: isActive ? 600 : 500,
               color: isActive ? '#ffffff' : '#94a3b8',
               backgroundColor: isActive ? 'var(--bg-sidebar-active)' : 'transparent',
-              transition: 'all 0.15s ease'
+              transition: 'all 0.12s ease',
+              position: 'relative',
+              boxShadow: isActive ? '0 2px 8px rgba(29, 78, 216, 0.35)' : 'none',
+              borderLeft: isActive ? '3px solid rgba(255,255,255,0.4)' : '3px solid transparent'
             })}
           >
-            <Icon size={17} />
-            <span>{label}</span>
+            {({ isActive }) => (
+              <>
+                <Icon size={16} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.7 }} />
+                <span style={{ letterSpacing: '0.01em' }}>{label}</span>
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
 
       {/* Sidebar Footer Live Status */}
       <div style={{ 
-        padding: '16px', 
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)', 
-        backgroundColor: 'rgba(0, 0, 0, 0.2)' 
+        padding: '14px 16px', 
+        borderTop: '1px solid rgba(255, 255, 255, 0.06)', 
+        backgroundColor: 'rgba(0, 0, 0, 0.25)',
+        flexShrink: 0
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '5px' }}>
           <span style={{ 
-            width: '8px', 
-            height: '8px', 
+            width: '7px', 
+            height: '7px', 
             borderRadius: '50%', 
-            backgroundColor: 'var(--status-low)',
-            boxShadow: '0 0 8px rgba(16, 185, 129, 0.6)'
+            backgroundColor: '#10b981',
+            boxShadow: '0 0 7px rgba(16, 185, 129, 0.7)',
+            flexShrink: 0
           }} />
-          <span style={{ color: '#f8fafc', fontSize: '0.8rem', fontWeight: 600 }}>Port Status: Operational</span>
+          <span style={{ color: '#e2e8f0', fontSize: '0.78rem', fontWeight: 600 }}>Operational</span>
         </div>
-        <p style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+        <p style={{ fontSize: '0.67rem', color: '#475569', marginTop: '1px' }}>
           Real-Time Multi-Terminal Feed
         </p>
-        <p style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '2px' }}>
+        <p style={{ fontSize: '0.65rem', color: '#334155', marginTop: '2px' }}>
           Planning Horizon: 72 Hours
         </p>
       </div>

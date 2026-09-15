@@ -76,11 +76,11 @@ export default function Operations() {
       {/* Header & Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
         <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
-            <CalendarClock size={22} color="var(--color-primary)" />
+          <h2 className="page-title">
+            <CalendarClock size={20} color="var(--color-primary)" />
             72-Hour Port Operations Master Plan
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '2px' }}>
+          <p className="page-subtitle">
             Greedy non-overlapping berth scheduling, quay crane dispatch, and turnaround duration forecasting.
           </p>
         </div>
@@ -201,8 +201,8 @@ export default function Operations() {
 
       {activeTab === 'cranes' && (
         <div className="glass-panel" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '14px' }}>
-            Port Quay Crane Assets & Status
+          <h3 className="section-heading" style={{ marginBottom: '14px' }}>
+            Port Quay Crane Assets &amp; Status
           </h3>
           <div style={{ overflowX: 'auto' }}>
             <table className="data-table">
