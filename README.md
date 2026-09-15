@@ -2,6 +2,11 @@
 
 > Intelligent port congestion forecasting, alternative berth routing, and 72-hour operational planning platform.
 
+[![Status](https://img.shields.io/badge/Status-Demo--Ready-success.svg)]()
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg)]()
+[![React](https://img.shields.io/badge/React-18-61DAFB.svg)]()
+[![scikit--learn](https://img.shields.io/badge/scikit--learn-1.6-F7931E.svg)]()
+
 ---
 
 ## 👥 Team
@@ -21,10 +26,35 @@ Ports face severe bottleneck congestion due to uncoordinated vessel arrivals, dr
 
 ---
 
-## 💡 Solution
+## 💡 Solution Overview
 
+We built a modular, explainable AI and optimization decision-support platform that:
+1. **Forecasts Terminal Congestion Levels**: Uses an explainable Random Forest machine learning classifier to predict congestion risks (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
+2. **Computes Dynamic Alternate Routing**: Calculates multi-criteria composite route scores (congestion penalty, wait times, distance, capacity) to suggest optimal terminal diversions.
+3. **Executes Priority-Aware Berth & Crane Optimization**: Implements non-overlapping greedy scheduling to allocate draft-compatible berths and 1–4 quay cranes per vessel.
+4. **Generates a 72-Hour Master Operations Timeline**: Delivers an interactive operations control center dashboard providing shift supervisors with real-time visibility into planned vessel turnarounds.
+
+---
+
+## 🏗️ Architecture & Flow
+
+```
+React Frontend (Vite + Glassmorphism UI)
+       │
+       ▼  (Axios REST)
+FastAPI Backend (/api)
+       │
+       ▼
+Service Layer (vessel, congestion, routing, operations)
+       │
+       ├──► ML Engine (Random Forest Congestion Classifier)
+       ├──► Routing Engine (Multi-criteria Scoring)
+       └──► Optimization Engine (Greedy Berth & Crane Scheduler)
+       │
+       ▼
+72-Hour Planner & Data Store (SQLite / CSV)
+```
 We built a modular, explainable AI and optimization decision-support platform that forecasts terminal congestion levels via a Random Forest machine learning classifier, computes dynamic multi-criteria rerouting recommendations for incoming vessels, and executes priority-aware greedy scheduling to generate non-overlapping berth and crane assignments over a rolling 72-hour operational planning horizon.
-
 ---
 
 ## ✨ Key Features
@@ -52,6 +82,8 @@ We built a modular, explainable AI and optimization decision-support platform th
 
 ## 📂 Repository Structure
 ```
+├── src/                  # All source code
+```
 ├── backend/
 │   ├── api/             # FastAPI REST endpoints (/api/vessels, /api/congestion, /api/routes, /api/operations)
 │   ├── models/          # Pydantic data schemas
@@ -74,6 +106,17 @@ We built a modular, explainable AI and optimization decision-support platform th
 │   │   └── utils/       # Date formatting & status helpers
 │   ├── package.json
 │   └── vite.config.js
+├── docs/                 # Written documentation & architecture specs
+│   ├── problem-statement.md
+│   ├── solution-overview.md
+│   ├── architecture.md
+│   └── setup-guide.md
+├── demo/                 # Demo artifacts & sample input/output JSON
+│   ├── screenshots/      # App screenshots
+│   ├── demo-video-link.txt  # Link to demo video
+│   └── live-demo-url.txt    # Live demo URL
+├── presentation/         # Slide deck
+└── submission.yaml       # Structured submission metadata
 ├── docs/                # Architecture, API, ML & optimization specs
 └── demo/                # Sample input and output JSON artifacts
 ```
@@ -82,6 +125,7 @@ We built a modular, explainable AI and optimization decision-support platform th
 
 ## 🚀 Getting Started
 
+### 1. Backend Setup
 ```bash
 # 1. Clone the repo
 git clone https://github.com/khushalvadher0-hash/bob-ai-hackathon-Team.git
@@ -97,11 +141,24 @@ cp backend/.env.example backend/.env
 # 4. Run the Backend API
 uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 
+# 4. Run the Backend API
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+
 # 5. Run the Frontend (in a separate terminal)
 cd frontend
 npm install
 npm run dev
 ```
+Backend API will be accessible at: `http://127.0.0.1:8000`  
+Swagger API Docs: `http://127.0.0.1:8000/docs`
+
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Frontend Web Dashboard will be live at: `http://localhost:5173`
 
 ---
 
@@ -129,3 +186,4 @@ npm run dev
 We are most proud of building a fully integrated, modular decision-support system in record time that bridges explainable machine learning predictions with deterministic resource scheduling. Shift supervisors can immediately understand *why* a terminal is congested, review alternate routing suggestions, and inspect a conflict-free 72-hour operational timeline on a glassmorphic dashboard.
 
 ---
+
