@@ -1,49 +1,50 @@
-# Architecture
+# System Architecture
 
-## System Architecture
+## Overview
+The **Container Congestion Predictor & Port Operations Optimiser** is an end-to-end intelligent decision support system designed to assist port shift supervisors in anticipating bottlenecks, re-routing vessels dynamically, and optimizing berth and crane allocations over a rolling 72-hour planning horizon.
 
-[Describe the overall architecture of your system. Replace the Mermaid diagram below with your actual architecture.]
-
-```mermaid
-graph TD
-    A[User / Browser] -->|HTTP| B[Frontend - React]
-    B -->|REST API| C[Backend - FastAPI]
-    C -->|SDK| D[watsonx.ai]
-    C -->|Query| E[PostgreSQL]
-    C -->|Publish| F[Slack Webhook]
-    D -->|Inference Result| C
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        React Frontend (Vite)                           │
+│     [Dashboard]   [Vessels]   [Congestion]   [Routing]   [Operations]  │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ HTTP / REST (Axios)
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                          FastAPI Gateway                               │
+│     /api/vessels      /api/congestion      /api/routes      /api/operations │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                          Service Layer                                 │
+│  [vessel_service]   [congestion_service]   [routing_service]   [operations_service] │
+└───────────┬───────────────────────┼─────────────────────────┬──────────┘
+            │                       │                         │
+            ▼                       ▼                         ▼
+┌─────────────────────┐  ┌─────────────────────┐  ┌──────────────────────┐
+│     ML Module       │  │   Routing Engine    │  │ Optimization Module  │
+│ (Random Forest / RF)│  │ (Multi-criteria     │  │ (Greedy Berth &      │
+│ Congestion Pred.    │  │  Route Scoring)     │  │  Crane Allocator)    │
+└───────────┬─────────┘  └──────────┬──────────┘  └──────────┬───────────┘
+            │                       │                        │
+            └───────────────────────┼────────────────────────┘
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                       72-Hour Operations Planner                       │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                         Data & SQLite Storage                          │
+│     [vessels.csv]       [berths.csv]       [historical_congestion.csv] │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Components
-
-| Component | Technology | Responsibility |
-|---|---|---|
-| Frontend | [e.g., React 18] | [e.g., Dashboard UI, user interaction] |
-| Backend API | [e.g., FastAPI] | [e.g., Business logic, orchestration] |
-| AI / ML | [e.g., watsonx.ai] | [e.g., Anomaly scoring, classification] |
-| Database | [e.g., PostgreSQL] | [e.g., Storing pipeline events and scores] |
-| Notifications | [e.g., Slack API] | [e.g., Alerting on threshold breaches] |
-
-## Data Flow
-
-[Describe how data moves through your system from input to output.]
-
-1. [e.g., Pipeline logs are ingested via a webhook from GitHub Actions]
-2. [e.g., Logs are preprocessed and chunked into 512-token segments]
-3. [e.g., Each chunk is sent to the watsonx.ai inference endpoint]
-4. [e.g., Anomaly scores are stored in PostgreSQL]
-5. [e.g., The React dashboard polls the API every 30 seconds to refresh]
-
-## Security Considerations
-
-[Note any security decisions relevant to the architecture — even if basic.]
-
-- [e.g., API keys stored in environment variables, never committed to git]
-- [e.g., All API routes require a Bearer token]
-- [e.g., Database credentials rotated via IBM Secrets Manager]
-
-## Scalability Notes
-
-[Optional: how would this scale beyond the hackathon prototype?]
-
-[e.g., "The FastAPI backend is stateless and could be horizontally scaled behind a load balancer. The watsonx.ai calls are the bottleneck and would benefit from request batching."]
+## Architectural Layers
+1. **Frontend**: Modern SPA built with React, Vite, and Lucide icons providing real-time visibility into port state, congestion maps, and scheduling timelines.
+2. **API Layer**: Lightweight FastAPI REST application offering structured endpoints with strict Pydantic schemas and CORS support.
+3. **Service Layer**: Decouples endpoints from business logic, aggregating data from CSV/SQLite and dispatching to analytical engines.
+4. **ML Module**: Explainable Random Forest model predicting terminal congestion probability based on incoming vessel volumes and resource availability.
+5. **Routing Engine**: Heuristic multi-criteria optimization evaluating alternate terminals to alleviate queue bottlenecks.
+6. **Optimization & Planning**: Greedy non-overlapping scheduling engine generating 72-hour operational timelines with optimal crane counts.
