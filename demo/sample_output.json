@@ -1,0 +1,23 @@
+{
+  "congestion_prediction": {
+    "probability": 0.87,
+    "level": "HIGH",
+    "predicted_wait_hours": 8.0
+  },
+  "routing_recommendation": {
+    "vessel_id": "V001",
+    "current_terminal": "T1",
+    "recommended_terminal": "T3",
+    "score": 0.32,
+    "reason": "Lower predicted congestion and better berth availability",
+    "estimated_wait_hours": 5.0
+  },
+  "operations_schedule_entry": {
+    "vessel_id": "V001",
+    "berth_id": "B07",
+    "cranes": 4,
+    "start_time": "2026-09-15T06:00:00",
+    "end_time": "2026-09-15T19:15:00",
+    "action": "Discharge & Load Containers"
+  }
+}
