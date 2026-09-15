@@ -205,6 +205,44 @@ export default function Dashboard() {
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: '16px'
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      
+      {/* Page Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <h2 style={{
+            fontSize: '1.3rem',
+            fontWeight: 800,
+            color: 'var(--text-primary)',
+            letterSpacing: '-0.02em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px'
+          }}>
+            <span style={{
+              width: '4px',
+              height: '22px',
+              backgroundColor: 'var(--color-primary)',
+              borderRadius: '2px',
+              display: 'inline-block'
+            }} />
+            Port Operations Overview
+          </h2>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '3px', marginLeft: '14px' }}>
+            Live multi-terminal monitoring · Congestion forecasting · 72-hour optimization
+          </p>
+        </div>
+        <button className="btn" onClick={loadData} style={{ fontSize: '0.75rem', padding: '5px 11px' }}>
+          <RefreshCw size={12} />
+          <span>Refresh</span>
+        </button>
+      </div>
+
+      {/* 4 Top KPI Cards */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+        gap: '12px'
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -401,6 +439,64 @@ export default function Dashboard() {
                   }}>
                     Smart Allocation Result
                   </span>
+              <h3 className="section-heading">Port Congestion Hotspots</h3>
+              <p className="section-subheading">AI-predicted bottleneck status and berth zone saturation</p>
+            </div>
+            <Link to="/congestion" style={{ color: 'var(--color-primary)', fontSize: '0.75rem', textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}>
+              Full Forecast →
+            </Link>
+          </div>
+
+          {/* Visual Berth Zone Grid Map */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+            gap: '10px',
+            marginBottom: '16px'
+          }}>
+            {congestion.map(c => {
+              const lvl = String(c.congestion_level || 'LOW').toUpperCase();
+              const isCrit = lvl === 'CRITICAL' || lvl === 'HIGH';
+              const isMed = lvl === 'MEDIUM';
+
+              const badgeColor = isCrit ? 'var(--status-critical)' : isMed ? 'var(--status-med)' : 'var(--status-low)';
+              const badgeBg = isCrit ? 'var(--status-critical-bg)' : isMed ? 'var(--status-med-bg)' : 'var(--status-low-bg)';
+              const borderColor = isCrit ? 'var(--status-critical-border)' : isMed ? 'var(--status-med-border)' : 'var(--status-low-border)';
+
+              return (
+                <div 
+                  key={c.terminal_id}
+                  style={{
+                    backgroundColor: badgeBg,
+                    border: `1px solid ${borderColor}`,
+                    borderRadius: 'var(--radius-md)',
+                    padding: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)' }}>
+                      {c.terminal_id}
+                    </span>
+                    <span style={{ 
+                      fontSize: '0.68rem', 
+                      fontWeight: 700, 
+                      color: badgeColor, 
+                      textTransform: 'uppercase' 
+                    }}>
+                      {lvl}
+                    </span>
+                  </div>
+
+                  <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                    {c.terminal_name}
+                  </p>
+
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                    Wait: <strong style={{ color: 'var(--text-primary)' }}>{c.predicted_wait_hours || 2}h</strong> • Berths: <strong style={{ color: 'var(--text-primary)' }}>{c.available_berths}</strong>
+                  </div>
                 </div>
                 <h3 style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '4px' }}>
                   {cleanValue(optimizationResult.terminal || 'North Deepwater Terminal')}
@@ -434,6 +530,15 @@ export default function Dashboard() {
                   Optimized based on vessel draft, physical length, and earliest availability.
                 </span>
               </div>
+        {/* Right: Alerts & Insights Panel */}
+        <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <h3 className="section-heading" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <AlertTriangle size={14} color="var(--status-high)" />
+              Alerts &amp; Insights
+            </h3>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Live Feed</span>
+          </div>
 
               <div className="tooltip-wrapper" style={{ display: 'block' }}>
                 <div style={{ background: 'var(--bg-card-subtle)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
@@ -500,6 +605,153 @@ export default function Dashboard() {
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
               Live container vessels ordered by priority ETA and container volume.
             </p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                72-Hour master schedule verified with 0 overlapping berth time slots. Average productivity standard calibrated at 35 TEU/hr per crane.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 3: Vessel Schedule (Left 50%) + 72-Hour Operations Plan (Right 50%) */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', 
+        gap: '20px' 
+      }}>
+        {/* Left: Vessel Schedule & Congestion Risk */}
+        <div className="glass-panel" style={{ padding: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <div>
+              <h3 className="section-heading">Vessel Schedule &amp; Congestion Risk</h3>
+              <p className="section-subheading">Prioritized arrival queue &amp; operational status</p>
+            </div>
+            <Link to="/vessels" style={{ color: 'var(--color-primary)', fontSize: '0.75rem', textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}>
+              View Fleet ({vessels.length}) →
+            </Link>
+          </div>
+
+          <div style={{ overflowX: 'auto' }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Vessel</th>
+                  <th>Terminal</th>
+                  <th>Containers</th>
+                  <th>Risk</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {vessels.slice(0, 6).map(v => (
+                  <tr key={v.vessel_id}>
+                    <td>
+                      <div style={{ fontWeight: 600, color: 'var(--color-primary)' }}>{v.vessel_name || v.vessel_id}</div>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{v.vessel_id}</div>
+                    </td>
+                    <td>
+                      <span style={{ 
+                        backgroundColor: '#f1f5f9', 
+                        padding: '2px 6px', 
+                        borderRadius: '4px', 
+                        fontSize: '0.75rem',
+                        fontWeight: 600 
+                      }}>
+                        {v.current_terminal || 'T1'}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '0.8rem' }}>{Number(v.container_count || 0).toLocaleString()} TEU</td>
+                    <td>
+                      <RiskBadge level={v.risk_level || (v.priority === 'HIGH' ? 'HIGH' : 'LOW')} />
+                    </td>
+                    <td>
+                      <button
+                        className="btn"
+                        style={{ padding: '3px 8px', fontSize: '0.72rem' }}
+                        onClick={() => navigate(`/routing?vesselId=${v.vessel_id}`)}
+                      >
+                        Route →
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Right: Optimised Berth & Crane Assignment (72-Hour Plan) */}
+        <div className="glass-panel" style={{ padding: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <div>
+              <h3 className="section-heading">72-Hour Port Operations Plan</h3>
+              <p className="section-subheading">Optimized berth docking &amp; crane assignment timeline</p>
+            </div>
+            <Link to="/operations" style={{ color: 'var(--color-primary)', fontSize: '0.75rem', textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}>
+              Full Master Plan →
+            </Link>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {activeAssignments.map((op, idx) => (
+              <div 
+                key={idx}
+                style={{
+                  padding: '10px 14px',
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: 'var(--radius-md)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{
+                    backgroundColor: 'var(--color-primary-light)',
+                    color: 'var(--color-primary)',
+                    fontWeight: 700,
+                    fontSize: '0.75rem',
+                    padding: '4px 8px',
+                    borderRadius: 'var(--radius-sm)'
+                  }}>
+                    {op.berth_id}
+                  </div>
+                  <div>
+                    <h5 style={{ fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                      {op.vessel_name || op.vessel_id}
+                    </h5>
+                    <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                      Terminal {op.terminal_id} • {op.cranes || 2} Cranes
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                    {formatDate(op.start_time)}
+                  </span>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--status-low-text)', fontWeight: 600 }}>
+                    Duration: ~{op.duration_hours}h
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Row 4: Alternate Routing Recommendations (Full Width) */}
+      <div className="glass-panel" style={{ padding: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+          <div>
+            <h3 className="section-heading" style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                <Sparkles size={14} color="var(--color-primary)" />
+                Alternate Routing Recommendations
+              </h3>
+              <p className="section-subheading">
+                Proactive congestion avoidance — transferring vessels to uncongested terminal berths
+              </p>
           </div>
 
           <Link to="/vessels" style={{ color: 'var(--color-primary)', fontSize: '0.82rem', textDecoration: 'none', fontWeight: 600 }}>
