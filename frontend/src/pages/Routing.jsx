@@ -45,12 +45,18 @@ export default function Routing() {
 
   if (loading) return <LoadingSpinner message="Fetching Fleet Routing Status & Multi-Criteria Models..." />;
 
-  const isRerouted = recommendation && recommendation.recommended_terminal && recommendation.current_terminal !== recommendation.recommended_terminal;
-  const timeSaved = recommendation?.wait_reduction_hours 
+  const isRerouted = Boolean(recommendation && recommendation.recommended_terminal && recommendation.current_terminal !== recommendation.recommended_terminal);
+  const timeSaved = recommendation && recommendation.wait_reduction_hours !== undefined && recommendation.wait_reduction_hours !== null
     ? Number(recommendation.wait_reduction_hours) 
     : recommendation?.current_wait_hours && recommendation?.estimated_wait_hours 
-    ? Math.max(0, Number(recommendation.current_wait_hours) - Number(recommendation.estimated_wait_hours))
-    : 6;
+    ? Math.max(0, Math.round((Number(recommendation.current_wait_hours) - Number(recommendation.estimated_wait_hours)) * 10) / 10)
+    : 0;
+
+  const allOptions = Array.isArray(recommendation?.all_options) ? recommendation.all_options : [];
+  const sortedOptions = [...allOptions].sort((a, b) => (a.estimated_wait_hours || 0) - (b.estimated_wait_hours || 0));
+  const rank1 = sortedOptions[0] || { terminal_id: recommendation?.recommended_terminal || 'T3', terminal_name: 'Recommended Terminal', estimated_wait_hours: recommendation?.estimated_wait_hours || 3.5 };
+  const rank2 = sortedOptions.find(o => o.terminal_id !== rank1.terminal_id && o.terminal_id !== recommendation?.current_terminal) || sortedOptions[1] || { terminal_id: 'T2', terminal_name: 'Secondary Basin', estimated_wait_hours: 4.5 };
+  const r2Savings = Math.max(0, Math.round(((recommendation?.current_wait_hours || 0) - (rank2.estimated_wait_hours || 0)) * 10) / 10);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -172,10 +178,10 @@ export default function Routing() {
                     <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#16a34a' }}>Saves ~{timeSaved}h</span>
                   </div>
                   <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '4px' }}>
-                    Terminal {recommendation.recommended_terminal} (Direct Docking)
+                    Terminal {rank1.terminal_id} ({rank1.terminal_name || 'Recommended'})
                   </h4>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '3px' }}>
-                    Lowest queue congestion penalty. Immediate draft and crane compatibility verified.
+                    Est. wait ~{rank1.estimated_wait_hours}h. Lowest queue congestion penalty. Immediate draft compatibility verified.
                   </p>
                 </div>
 
@@ -187,31 +193,37 @@ export default function Routing() {
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)' }}>RANK 2 (SECONDARY)</span>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Saves ~2.0h</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Saves ~{r2Savings}h</span>
                   </div>
                   <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '4px' }}>
-                    Terminal T2 (East Basin)
+                    Terminal {rank2.terminal_id} ({rank2.terminal_name || 'Secondary Option'})
                   </h4>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '3px' }}>
-                    Secondary feasibility option. Minor anchorage queue before berth clears.
+                    Est. wait ~{rank2.estimated_wait_hours}h. Feasible alternate berth allocation.
                   </p>
                 </div>
 
                 <div style={{
                   padding: '14px',
-                  backgroundColor: '#fff7ed',
-                  border: '1px solid #fed7aa',
+                  backgroundColor: isRerouted ? '#fff7ed' : '#f0fdf4',
+                  border: `1px solid ${isRerouted ? '#fed7aa' : '#bbf7d0'}`,
                   borderRadius: 'var(--radius-md)'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#c2410c' }}>CURRENT STATUS</span>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#ea580c' }}>+4.5h delay</span>
+                    <span style={{ fontSize: '0.7rem', fontWeight: 700, color: isRerouted ? '#c2410c' : '#15803d' }}>
+                      {isRerouted ? 'CURRENT ASSIGNMENT' : 'OPTIMAL ASSIGNMENT'}
+                    </span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: isRerouted ? '#ea580c' : '#16a34a' }}>
+                      ~{recommendation.current_wait_hours}h wait
+                    </span>
                   </div>
                   <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '4px' }}>
-                    Terminal {recommendation.current_terminal} (Current Queue)
+                    Terminal {recommendation.current_terminal}
                   </h4>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '3px' }}>
-                    Heavy berth backlog. Vessels experiencing extended idle anchorage times.
+                    {isRerouted 
+                      ? 'Heavy berth backlog. Vessel experiencing extended anchorage dwell time.'
+                      : 'Terminal operating with low queue congestion and available berths.'}
                   </p>
                 </div>
               </div>
@@ -238,6 +250,8 @@ export default function Routing() {
                     {congestion.map(c => {
                       const isCurrent = c.terminal_id === recommendation.current_terminal;
                       const isRecommended = c.terminal_id === recommendation.recommended_terminal;
+                      const rawProb = c.probability ?? 0.5;
+                      const probPercent = rawProb > 1 ? Math.min(100, Math.round(rawProb)) : Math.round(rawProb * 100);
 
                       return (
                         <tr key={c.terminal_id}>
@@ -249,7 +263,7 @@ export default function Routing() {
                               {cleanText(c.congestion_level)}
                             </span>
                           </td>
-                          <td style={{ fontSize: '0.8rem' }}>{Math.round((c.probability || 0.5) * 100)}%</td>
+                          <td style={{ fontSize: '0.8rem' }}>{probPercent}%</td>
                           <td style={{ fontSize: '0.8rem' }}>~{c.predicted_wait_hours || 2} hrs</td>
                           <td style={{ fontSize: '0.8rem' }}>{c.available_berths} open</td>
                           <td>

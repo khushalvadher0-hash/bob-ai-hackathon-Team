@@ -72,30 +72,43 @@ def _normalize_vessel(doc: Dict[str, Any]) -> Dict[str, Any]:
     return clean
 
 def get_all_vessels() -> List[Dict[str, Any]]:
-    """Fetches all vessels from MongoDB, with fallback to CSV if database is empty/unreachable."""
+    """Fetches all vessels from MongoDB and merges with CSV records so all port vessels are available."""
+    vessel_map = {}
+
+    # 1. Load from MongoDB if accessible
     try:
         db = get_database()
         cursor = db.vessels.find({})
-        vessels = []
         for doc in cursor:
-            vessels.append(_normalize_vessel(doc))
-        if vessels:
-            return vessels
+            norm = _normalize_vessel(doc)
+            v_id = str(norm.get("vessel_id", "")).strip().upper()
+            if v_id:
+                vessel_map[v_id] = norm
     except Exception as e:
         print(f"Notice: reading vessels from CSV fallback ({e})")
 
-    # Fallback to CSV if MongoDB collection is empty or unreachable
+    # 2. Merge CSV records (adds any fleet vessels not in MongoDB)
     if DATA_PATH.exists():
-        df = pd.read_csv(DATA_PATH).fillna("")
-        raw_list = df.to_dict(orient="records")
-        return [_normalize_vessel(v) for v in raw_list]
-    return []
+        try:
+            df = pd.read_csv(DATA_PATH).fillna("")
+            raw_list = df.to_dict(orient="records")
+            for doc in raw_list:
+                norm = _normalize_vessel(doc)
+                v_id = str(norm.get("vessel_id", "")).strip().upper()
+                if v_id and v_id not in vessel_map:
+                    vessel_map[v_id] = norm
+        except Exception as e:
+            print(f"Notice reading vessels.csv: {e}")
+
+    return list(vessel_map.values())
 
 def get_vessel_by_id(vessel_id: str) -> Optional[Dict[str, Any]]:
-    """Retrieves a single vessel by its vessel_id or name (case-insensitive)."""
+    """Retrieves a single vessel by its vessel_id or name (case-insensitive) across MongoDB and CSV."""
     if not vessel_id:
         return None
     clean_id = str(vessel_id).strip()
+
+    # 1. Try MongoDB first
     try:
         db = get_database()
         doc = db.vessels.find_one({
@@ -108,13 +121,15 @@ def get_vessel_by_id(vessel_id: str) -> Optional[Dict[str, Any]]:
         if doc:
             return _normalize_vessel(doc)
     except Exception as e:
-        print(f"Notice: searching vessel from fallback ({e})")
+        pass
 
+    # 2. Check full merged vessels list
     all_vessels = get_all_vessels()
     for v in all_vessels:
-        if str(v.get("vessel_id", "")).upper() == clean_id.upper() or \
-           str(v.get("vessel_name", "")).upper() == clean_id.upper():
+        if str(v.get("vessel_id", "")).strip().upper() == clean_id.upper() or \
+           str(v.get("vessel_name", "")).strip().upper() == clean_id.upper():
             return v
+
     return None
 
 def add_vessel(data: Dict[str, Any]) -> Dict[str, Any]:
