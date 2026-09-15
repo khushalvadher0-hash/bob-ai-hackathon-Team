@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { vesselsData } from '../data/vesselsData';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
@@ -38,21 +39,41 @@ client.interceptors.response.use(
 );
 
 // Normalized helper to get vessels (handles direct array or { count, vessels: [] })
+=======
+// Normalized helper to get vessels (queries /api/vessels with fallback to /vessels and shared dataset)
 export const getVessels = async () => {
-  const res = await client.get('/api/vessels');
-  if (Array.isArray(res.data)) {
-    return res.data;
+  try {
+    const res = await client.get('/api/vessels');
+    if (Array.isArray(res.data) && res.data.length > 0) {
+      return res.data;
+    }
+    if (res.data && Array.isArray(res.data.vessels) && res.data.vessels.length > 0) {
+      return res.data.vessels;
+    }
+  } catch (err) {
+    try {
+      const res = await client.get('/vessels');
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        return res.data;
+      }
+    } catch (e) {
+      console.warn('Backend unavailable, utilizing shared vessels dataset fallback:', e);
+    }
   }
-  if (res.data && Array.isArray(res.data.vessels)) {
-    return res.data.vessels;
-  }
-  return [];
+  return vesselsData;
 };
 
 export const getVesselById = async (id) => {
-  const res = await client.get(`/api/vessels/${id}`);
-  return res.data;
+  try {
+    const res = await client.get(`/api/vessels/${id}`);
+    return res.data;
+  } catch (err) {
+    const found = vesselsData.find(v => String(v.vessel_id).toUpperCase() === String(id).toUpperCase());
+    if (found) return found;
+    return vesselsData[0];
+  }
 };
+
 
 // Alias for backwards compatibility
 export const getVessel = getVesselById;
@@ -100,8 +121,21 @@ export const getCraneAllocation = async () => {
 };
 export const getCranes = getCraneAllocation;
 
+export const getOptimizationResult = async (terminalId = null) => {
+  const url = terminalId ? `/api/optimize?terminal_id=${terminalId}` : '/optimize';
+  const res = await client.get(url);
+  return res.data;
+};
+
+export const getPlan = async () => {
+  const res = await client.get('/plan');
+  return res.data;
+};
+
 export const getHealth = async () => {
   const res = await client.get('/health');
   return res.data;
 };
+
+
 

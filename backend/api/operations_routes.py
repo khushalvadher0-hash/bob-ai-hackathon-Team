@@ -5,12 +5,22 @@ from ..services.operations_service import (
     get_berths_data,
     get_cranes_data,
     get_optimized_berths_service,
-    get_vessel_berth_assignment_service
+    get_vessel_berth_assignment_service,
+    generate_simple_72h_plan
 )
 
-router = APIRouter(prefix="/api/operations", tags=["Operations"])
+router = APIRouter(tags=["Operations"])
 
-@router.get("/72h", response_model=Dict[str, Any])
+@router.get("/plan", response_model=List[Dict[str, Any]])
+@router.get("/api/plan", response_model=List[Dict[str, Any]])
+@router.get("/api/operations/plan", response_model=List[Dict[str, Any]])
+def get_simple_72h_plan():
+    """
+    Returns simple 72-hour operational plan matching vessel handling based on berth availability and arrival time.
+    """
+    return generate_simple_72h_plan()
+
+@router.get("/api/operations/72h", response_model=Dict[str, Any])
 def get_72h_operations_plan():
     """
     Returns rolling 72-hour operational plan with scheduled non-overlapping slots.
@@ -18,6 +28,7 @@ def get_72h_operations_plan():
     return get_72h_plan_service()
 
 @router.get("/berths", response_model=Union[Dict[str, Any], List[Dict[str, Any]]])
+@router.get("/api/operations/berths", response_model=Union[Dict[str, Any], List[Dict[str, Any]]])
 def list_optimized_berths(raw: bool = False):
     """
     Returns the current optimized berth schedule (default).
@@ -28,6 +39,7 @@ def list_optimized_berths(raw: bool = False):
     return get_optimized_berths_service()
 
 @router.get("/berths/{vessel_id}", response_model=Dict[str, Any])
+@router.get("/api/operations/berths/{vessel_id}", response_model=Dict[str, Any])
 def get_vessel_berth_assignment(vessel_id: str):
     """
     Returns the optimized berth assignment for a specific vessel.
@@ -41,6 +53,7 @@ def get_vessel_berth_assignment(vessel_id: str):
     return assignment
 
 @router.get("/cranes", response_model=List[Dict[str, Any]])
+@router.get("/api/operations/cranes", response_model=List[Dict[str, Any]])
 def list_cranes():
     """
     Returns deployable crane inventory across all port terminals.

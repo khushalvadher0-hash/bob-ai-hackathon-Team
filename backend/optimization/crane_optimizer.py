@@ -11,11 +11,51 @@ from ..optimization.berth_optimizer import parse_iso_datetime
 
 CRANE_PRODUCTIVITY_TEU_PER_HOUR: int = 35
 
+def assign_cranes(vessel: Dict[str, Any], berth: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Task 3: Crane Allocation Engine
+    Logic based on TEU workload:
+      - < 1500 TEU    -> 2 cranes
+      - 1500-2500 TEU -> 3 cranes
+      - > 2500 TEU    -> 4 cranes
+    Constraint:
+      cranes <= berth.crane_count
+    """
+    teu = int(vessel.get("container_count", vessel.get("teu", 1000)) or 1000)
+    berth_max_cranes = int(berth.get("crane_count", 4) or 4)
+
+    if teu > 2500:
+        desired_cranes = 4
+    elif teu >= 1500:
+        desired_cranes = 3
+    else:
+        desired_cranes = 2
+
+    assigned_count = max(1, min(desired_cranes, berth_max_cranes))
+    handling_rate = assigned_count * CRANE_PRODUCTIVITY_TEU_PER_HOUR
+    duration_hours = max(2.5, round(teu / handling_rate, 1))
+
+    return {
+        "cranes": assigned_count,
+        "assigned_cranes": assigned_count,
+        "duration_hours": duration_hours,
+        "handling_rate_teu_hr": handling_rate,
+        "why": f"Assigned {assigned_count} cranes based on {teu:,} TEU cargo volume ({handling_rate} TEU/hr total rate)."
+    }
+
 def calculate_required_crane_count(
     container_count: int,
     priority: str = "MEDIUM",
     max_berth_cranes: int = 4
 ) -> int:
+    """
+    Computes required number of cranes based on container volume and vessel priority.
+    """
+    vessel_mock = {"container_count": container_count}
+    berth_mock = {"crane_count": max_berth_cranes}
+    res = assign_cranes(vessel_mock, berth_mock)
+    return res["cranes"]
+
     """Compatibility helper using ML crane requirement prediction."""
     res = predict_crane_requirement(
         vessel={"container_count": container_count, "priority": priority},

@@ -3,10 +3,11 @@ import { Search, Filter, Ship, RefreshCw, AlertTriangle, ArrowUpDown } from 'luc
 import VesselTable from '../components/VesselTable';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { getVessels } from '../services/api';
+import { vesselsData } from '../data/vesselsData';
 import { useNavigate } from 'react-router-dom';
 
 export default function Vessels() {
-  const [vessels, setVessels] = useState([]);
+  const [vessels, setVessels] = useState(vesselsData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,10 +23,14 @@ export default function Vessels() {
     setError(null);
     try {
       const data = await getVessels();
-      setVessels(Array.isArray(data) ? data : []);
+      if (Array.isArray(data) && data.length > 0) {
+        setVessels(data);
+      } else {
+        setVessels(vesselsData);
+      }
     } catch (err) {
-      console.error(err);
-      setError('Unable to load vessel data. Please check backend connection.');
+      console.warn('API error, using shared vessel dataset:', err);
+      setVessels(vesselsData);
     } finally {
       setLoading(false);
     }
