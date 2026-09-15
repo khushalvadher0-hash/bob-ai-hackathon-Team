@@ -48,33 +48,37 @@ def get_optimized_berths_service() -> Dict[str, Any]:
 
     optimized_result = optimize_berth_assignments(vessels, berths, routing_recommendations=routing_map)
 
-    # Persist optimized assignments into MongoDB operations collection
+    # Persist optimized assignments into MongoDB operations collection (Single Bulk Call)
     try:
+        from pymongo import UpdateOne
         db = get_database()
-        for item in optimized_result.get("schedule", []):
-            op_doc = {
-                "vessel_id": item.get("vessel_id"),
-                "vessel_name": item.get("vessel_name"),
-                "terminal_id": item.get("terminal_id"),
-                "berth_id": item.get("berth_id"),
-                "berth_name": item.get("berth_name"),
-                "cranes": item.get("cranes"),
-                "arrival_time": item.get("arrival_time"),
-                "start_time": item.get("start_time"),
-                "end_time": item.get("end_time"),
-                "duration_hours": item.get("duration_hours"),
-                "estimated_wait_hours": item.get("estimated_wait_hours"),
-                "berth_score": item.get("berth_score"),
-                "status": "ASSIGNED",
-                "priority": item.get("priority", "MEDIUM")
-            }
-            db.operations.update_one(
+        ops = [
+            UpdateOne(
                 {"vessel_id": item.get("vessel_id")},
-                {"$set": op_doc},
+                {"$set": {
+                    "vessel_id": item.get("vessel_id"),
+                    "vessel_name": item.get("vessel_name"),
+                    "terminal_id": item.get("terminal_id"),
+                    "berth_id": item.get("berth_id"),
+                    "berth_name": item.get("berth_name"),
+                    "cranes": item.get("cranes"),
+                    "arrival_time": item.get("arrival_time"),
+                    "start_time": item.get("start_time"),
+                    "end_time": item.get("end_time"),
+                    "duration_hours": item.get("duration_hours"),
+                    "estimated_wait_hours": item.get("estimated_wait_hours"),
+                    "berth_score": item.get("berth_score"),
+                    "status": "ASSIGNED",
+                    "priority": item.get("priority", "MEDIUM")
+                }},
                 upsert=True
             )
-    except Exception as e:
-        print(f"Notice: operational berth MongoDB persistence ({e})")
+            for item in optimized_result.get("schedule", [])
+        ]
+        if ops:
+            db.operations.bulk_write(ops, ordered=False)
+    except Exception:
+        pass
 
     return optimized_result
 

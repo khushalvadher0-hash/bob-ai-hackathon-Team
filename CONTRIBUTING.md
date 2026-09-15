@@ -1,117 +1,83 @@
-# How to Submit Your Hackathon Entry
+# 🚢 Container Congestion Predictor & Port Operations Optimiser
 
-Follow these steps to set up your submission repository correctly.
-The judges depend on this structure to review your entry — deviations may affect your score.
+## 👥 Team Details
+**Team Name:** Team  
 
----
+**Team Lead:**  
+- Khushal Vadher — 24it102@charusat.edu.in  
 
-## Step 1 — Fork This Template
-
-1. Click the **"Use this template"** button at the top of this repository
-   (or **Fork** if you prefer)
-2. Name your repository: `bob-ai-hackathon-[your-team-name]`
-   (e.g., `bob-ai-hackathon-orion-squad`)
-3. Set visibility to **Public** so judges can access it
-4. Click **Create repository**
+**Team Members:**  
+- Darshan Raval — 24it084@charusat.edu.in  
+- Parth Patoliya — 24it081@charusat.edu.in  
+- Jay Rohit — 24it085@charusat.edu.in  
 
 ---
 
-## Step 2 — Clone Your Fork Locally
+## 📌 Problem Statement
 
-```bash
-git clone https://github.com/[your-org]/bob-ai-hackathon-[your-team-name].git
-cd bob-ai-hackathon-[your-team-name]
-```
+Ports face severe congestion due to inefficient manual allocation of berths and cranes, leading to delays, increased operational costs, and disrupted global supply chains. Operators lack real-time predictive insights to anticipate congestion and optimize resource utilization effectively.
 
 ---
 
-## Step 3 — Fill in the Required Files
+## 💡 Solution Overview
 
-Work through these files in order:
-
-### 3a. `submission.yaml` ← **Start here**
-This is the most important file. Judges use it to get an overview of your entry.
-
-- Open [`submission.yaml`](submission.yaml)
-- Fill in **every field marked `# REQUIRED`**
-- Read the inline comments — they explain what each field expects
-
-### 3b. `README.md`
-- Replace every `[placeholder in brackets]` with your actual content
-
-### 3c. `docs/`
-Fill in all four documentation files:
-| File | What to write |
-|---|---|
-| [`docs/problem-statement.md`](docs/problem-statement.md) | The problem you're solving |
-| [`docs/solution-overview.md`](docs/solution-overview.md) | How your solution works |
-| [`docs/architecture.md`](docs/architecture.md) | Technical architecture diagram |
-| [`docs/setup-guide.md`](docs/setup-guide.md) | Exact steps to run your project |
-
-### 3d. `src/`
-- Put all your source code inside [`src/`](src/)
-- Copy [`src/.env.example`](src/.env.example) and add your environment variables to it
-- **Never commit a real `.env` file** — it is already in `.gitignore`
-
-### 3e. `demo/`
-| File | What to do |
-|---|---|
-| [`demo/demo-video-link.txt`](demo/demo-video-link.txt) | Replace placeholder URL with your real video link |
-| [`demo/live-demo-url.txt`](demo/live-demo-url.txt) | Add your deployed demo URL (or write "NOT DEPLOYED") |
-| [`demo/screenshots/`](demo/screenshots/) | Add 3+ screenshots named `01-*.png`, `02-*.png`, etc. |
-
-### 3f. `presentation/`
-- Add your slide deck as [`presentation/slides.pdf`](presentation/) (preferred) or `.pptx`
+We built an **AI-powered Port Optimization System** that predicts congestion levels, allocates berths and cranes intelligently, and generates a 72-hour operational plan. The system simulates a real-world **Port Community System**, enabling smarter decision-making for port operators.
 
 ---
 
-## Step 4 — Verify Your Submission Passes Validation
+## 🚀 Key Features
 
-Every push to your repository triggers the **Validate Submission** GitHub Action automatically.
+- 🔮 **Congestion Prediction Engine**  
+  Predicts HIGH / MEDIUM / LOW congestion using smart scoring logic  
 
-To check manually:
-1. Go to your repo on GitHub
-2. Click the **Actions** tab
-3. Look for **✅ Validate Submission**
-4. A green checkmark means your submission is structurally complete
-5. A red X means something is missing — click the run to see what
+- ⚓ **Smart Berth Allocation**  
+  Assigns optimal berths based on vessel size, availability, and capacity  
 
-You can also run the validation locally:
-```bash
-# Install yq first: https://github.com/mikefarah/yq#install
-yq '.' submission.yaml   # checks YAML is valid
-```
+- 🏗 **Crane Optimization System**  
+  Dynamically allocates cranes based on vessel TEU and workload  
 
----
+- 📊 **72-Hour Operations Planning**  
+  Generates a complete scheduling plan for upcoming port operations  
 
-## Step 5 — Submit Your Repository URL
+- 🔁 **Routing Recommendations**  
+  Suggests alternate terminals to reduce delays and congestion  
 
-Once validation passes:
-
-1. Copy your repository URL:
-   `https://github.com/[your-org]/bob-ai-hackathon-[your-team-name]`
-
-2. Submit it via the **official entry form** at:
-   `[ORGANIZER: INSERT FORM URL HERE]`
-
-3. **Deadline:** `[ORGANIZER: INSERT DEADLINE HERE]`
-
-> ⚠️ Submissions after the deadline will not be reviewed.
-> Changes after the deadline are not considered — make sure everything is complete before submitting.
+- 🚨 **Alert & Insight System**  
+  Provides real-time warnings and AI-based operational insights  
 
 ---
 
-## Checklist Before You Submit
+## 🛠 Tech Stack
 
-- [ ] `submission.yaml` — all required fields filled
-- [ ] `README.md` — no `[placeholder]` text remaining
-- [ ] `docs/setup-guide.md` — someone else can run your project using these instructions
-- [ ] `src/` — all source code committed (no `node_modules`, no `.env`)
-- [ ] `demo/demo-video-link.txt` — real video URL (3–5 min showing the app working)
-- [ ] `demo/screenshots/` — at least 3 screenshots of the running application
-- [ ] `presentation/slides.pdf` — slide deck present
-- [ ] GitHub Actions **✅ Validate Submission** is green
-- [ ] Repository is **Public**
-- [ ] Entry form submitted before the deadline
+### 💻 Languages
+- Python  
+- JavaScript  
+
+### ⚙️ Frameworks
+- FastAPI (Backend)  
+- React.js (Frontend)  
+
+### 🧠 IBM Technologies
+- IBM BOB AI Hackathon Framework  
+
+### 🗄 Databases
+- JSON / CSV-based simulation (lightweight for demo)
+
+### 🔧 Other Tools
+- Git & GitHub  
+- Vercel (Frontend Deployment)  
+- Render / Localhost (Backend)  
 
 ---
+
+## 🧠 How It Works
+
+1. Vessel and berth data is processed  
+2. Congestion score is calculated using multiple factors  
+3. AI logic assigns best berth and crane combination  
+4. System generates optimized 72-hour plan  
+5. Alerts and insights guide operator decisions  
+
+---
+
+## 🖥️ Project Structure
