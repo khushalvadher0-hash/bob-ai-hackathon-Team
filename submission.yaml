@@ -47,8 +47,8 @@ submission:
   tech_stack: 
     languages: ["Python", "JavaScript"]                      
     frameworks: ["FastAPI", "React", "Tailwind CSS"]                     
-    ibm_technologies: ["IBM Bob"]               
-    databases: ["JSON (File-based)"]                     
+    ibm_technologies: []               
+    databases: ["None"]                     
     other: ["Git", "Postman", "Vite"]                          
  
   what_we_are_most_proud_of: >
