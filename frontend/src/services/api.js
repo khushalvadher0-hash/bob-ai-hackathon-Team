@@ -11,7 +11,7 @@ const client = axios.create({
 
 export const getVessels = async () => {
   const res = await client.get('/api/vessels');
-  return res.data;
+  return Array.isArray(res.data) ? res.data : (res.data.vessels || []);
 };
 
 export const getVessel = async (id) => {
@@ -21,7 +21,7 @@ export const getVessel = async (id) => {
 
 export const getCongestion = async () => {
   const res = await client.get('/api/congestion');
-  return res.data;
+  return Array.isArray(res.data) ? res.data : (res.data.predictions || []);
 };
 
 export const getTerminalCongestion = async (id) => {
