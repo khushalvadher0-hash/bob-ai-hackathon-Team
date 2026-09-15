@@ -75,6 +75,7 @@ def initialize_database() -> None:
     try:
         db = get_database()
         required_collections = [
+            "users",
             "vessels",
             "berths",
             "ports",
@@ -88,6 +89,7 @@ def initialize_database() -> None:
                 db.create_collection(col_name)
 
         # Create useful indexes
+        db.users.create_index([("email", ASCENDING)], unique=True)
         db.vessels.create_index([("vessel_id", ASCENDING)], unique=True)
         db.vessels.create_index([("terminal_id", ASCENDING)])
 

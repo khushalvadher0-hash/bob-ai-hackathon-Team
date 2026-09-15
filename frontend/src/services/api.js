@@ -9,6 +9,34 @@ const client = axios.create({
   },
 });
 
+// Request interceptor: Attach JWT token if present in localStorage
+client.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('port_optimizer_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor: Clear session on 401 Unauthorized
+client.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Clear invalid session if we receive unauthorized
+      localStorage.removeItem('port_optimizer_token');
+      localStorage.removeItem('port_optimizer_user');
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Normalized helper to get vessels (handles direct array or { count, vessels: [] })
 export const getVessels = async () => {
   const res = await client.get('/api/vessels');

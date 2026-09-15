@@ -1,5 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
@@ -7,8 +9,10 @@ import Vessels from './pages/Vessels';
 import Congestion from './pages/Congestion';
 import Routing from './pages/Routing';
 import Operations from './pages/Operations';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
-export default function App() {
+function AuthenticatedLayout() {
   const handleRefresh = () => {
     window.location.reload();
   };
@@ -31,3 +35,27 @@ export default function App() {
     </div>
   );
 }
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Routes>
+        {/* Public Authentication Pages */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/register" element={<Navigate to="/signup" replace />} />
+
+        {/* Protected Port Operations Application */}
+        <Route
+          path="/*"
+          element={
+            <ProtectedRoute>
+              <AuthenticatedLayout />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </AuthProvider>
+  );
+}
+
