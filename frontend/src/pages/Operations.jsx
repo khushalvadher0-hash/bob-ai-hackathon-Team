@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import OperationsTimeline from '../components/OperationsTimeline';
 import BerthSchedule from '../components/BerthSchedule';
+import Plan72HourTable from '../components/Plan72HourTable';
 import LoadingSpinner from '../components/LoadingSpinner';
 import StatCard from '../components/StatCard';
 import { get72HourOperations, getBerthSchedule, getCraneAllocation } from '../services/api';
@@ -187,6 +188,9 @@ export default function Operations() {
           color="var(--status-med)"
         />
       </div>
+
+      {/* Simple 72-Hour Operations Plan with Live API Trigger */}
+      <Plan72HourTable />
 
       {/* Tab Content */}
       {activeTab === 'timeline' && (

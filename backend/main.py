@@ -71,15 +71,16 @@ def health_check():
 @app.get("/api/dashboard-summary")
 def get_dashboard_summary():
     """
-    Returns aggregated port operations dashboard summary:
-    - total_vessels
-    - high_risk_vessels
-    - congested_terminals
-    - available_berths
-    - active_cranes
-    - congestion_probability
-    - expected_delay
-    - vessel_distribution: { scheduled, queued, approaching }
+    Returns aggregated port operations dashboard summary.
     """
     return get_dashboard_summary_data()
+
+@app.get("/plan")
+@app.get("/api/plan")
+def get_operations_plan_root():
+    from .services.operations_service import generate_simple_72h_plan
+    return generate_simple_72h_plan()
+
+
+
 

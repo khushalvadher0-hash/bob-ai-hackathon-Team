@@ -186,3 +186,119 @@ def save_operation(operation_data: Dict[str, Any]) -> Dict[str, Any]:
         del clean_data["_id"]
     db.operations.update_one({"vessel_id": v_id}, {"$set": clean_data}, upsert=True)
     return clean_data
+
+def generate_simple_72h_plan() -> List[Dict[str, Any]]:
+    """
+    Task 4: AI 72-Hour Scheduling Engine (generateOptimizedPlan)
+    Steps:
+      1. Sort vessels by Priority (HIGH first) then arrival time.
+      2. For each vessel:
+         - assign_best_berth (size fit, wait score)
+         - assign_cranes (TEU workload tiered allocation)
+         - calculate non-overlapping start/end times
+      3. Track berth usage timeline to avoid overlap.
+      4. Output structured plan with transparent AI reasoning (WHY).
+    """
+    from datetime import datetime, timedelta
+    from ..optimization.berth_optimizer import assign_best_berth
+    from ..optimization.crane_optimizer import assign_cranes
+
+    vessels = get_all_vessels()
+    raw_berths = get_berths_data()
+
+    if not raw_berths:
+        raw_berths = [
+            {"berth_id": "B01", "terminal_id": "T1", "crane_count": 4, "max_vessel_size": "Ultra Large (ULCV)", "status": "AVAILABLE"},
+            {"berth_id": "B02", "terminal_id": "T1", "crane_count": 4, "max_vessel_size": "Ultra Large (ULCV)", "status": "AVAILABLE"},
+            {"berth_id": "B03", "terminal_id": "T1", "crane_count": 3, "max_vessel_size": "Neo-Panamax", "status": "AVAILABLE"},
+            {"berth_id": "B04", "terminal_id": "T2", "crane_count": 4, "max_vessel_size": "Ultra Large (ULCV)", "status": "AVAILABLE"},
+            {"berth_id": "B05", "terminal_id": "T2", "crane_count": 3, "max_vessel_size": "Neo-Panamax", "status": "AVAILABLE"},
+            {"berth_id": "B06", "terminal_id": "T3", "crane_count": 3, "max_vessel_size": "Neo-Panamax", "status": "AVAILABLE"},
+            {"berth_id": "B07", "terminal_id": "T3", "crane_count": 3, "max_vessel_size": "Neo-Panamax", "status": "AVAILABLE"},
+            {"berth_id": "B08", "terminal_id": "T4", "crane_count": 2, "max_vessel_size": "Feeder", "status": "AVAILABLE"}
+        ]
+
+    # Timeline tracker: berth_id -> datetime when it becomes free
+    berth_free_times: Dict[str, datetime] = {
+        str(b.get("berth_id")): datetime.min for b in raw_berths if b.get("berth_id")
+    }
+
+    # Helper to parse arrival time
+    def parse_arrival(v):
+        arr = v.get("arrival_time") or v.get("eta")
+        if isinstance(arr, datetime):
+            return arr
+        if isinstance(arr, str):
+            try:
+                return datetime.fromisoformat(arr.replace("Z", "+00:00").split("+")[0])
+            except Exception:
+                pass
+        return datetime(2026, 9, 15, 8, 0)
+
+    # Priority rank: HIGH (1) -> MEDIUM (2) -> LOW (3)
+    def priority_rank(v):
+        p = str(v.get("priority") or v.get("risk_level") or "LOW").upper()
+        if "HIGH" in p or "CRIT" in p or p == "1":
+            return 1
+        if "MED" in p or p == "2":
+            return 2
+        return 3
+
+    # 1. Sort vessels by Priority then Arrival Time
+    sorted_vessels = sorted(vessels, key=lambda v: (priority_rank(v), parse_arrival(v)))
+
+    plan_entries: List[Dict[str, Any]] = []
+
+    for v in sorted_vessels:
+        vessel_name = v.get("name") or v.get("vessel_name") or v.get("vessel_id") or "Vessel"
+        arr_dt = parse_arrival(v)
+        teu = int(v.get("container_count", v.get("teu", 1000)) or 1000)
+
+        # 2. Smart Berth Allocation Engine
+        best_berth_decision = assign_best_berth(v, raw_berths, berth_free_times)
+        chosen_berth_id = best_berth_decision.get("berth_id", "B01")
+        chosen_berth_obj = best_berth_decision.get("berth", {})
+
+        # 3. Smart Crane Allocation Engine
+        crane_decision = assign_cranes(v, chosen_berth_obj)
+        cranes = crane_decision["cranes"]
+        duration_hrs = crane_decision["duration_hours"]
+
+        # 4. Scheduling start and end times without temporal overlap
+        start_dt = best_berth_decision.get("start_time", arr_dt)
+        if start_dt < arr_dt:
+            start_dt = arr_dt
+        end_dt = start_dt + timedelta(hours=duration_hrs)
+
+        # Update berth tracker
+        berth_free_times[chosen_berth_id] = end_dt
+
+        # Check status
+        has_delay = (start_dt > arr_dt)
+        raw_status = str(v.get("status", "Scheduled")).capitalize()
+        if has_delay:
+            status = "Queued"
+        elif raw_status in ["Approaching", "Queued"]:
+            status = raw_status
+        else:
+            status = "Scheduled"
+
+        wait_hrs = round(max(0.0, (start_dt - arr_dt).total_seconds() / 3600.0), 1)
+        why_text = f"Allocated Berth {chosen_berth_id} with {cranes} cranes for {teu:,} TEU (duration: {duration_hrs}h, wait: {wait_hrs}h)."
+
+        plan_entries.append({
+            "time": start_dt.strftime("%Y-%m-%d %H:%M"),
+            "vessel": vessel_name,
+            "berth": chosen_berth_id,
+            "cranes": cranes,
+            "start_time": start_dt.isoformat(),
+            "end_time": end_dt.isoformat(),
+            "duration_hours": duration_hrs,
+            "status": status,
+            "reason": why_text,
+            "why": why_text
+        })
+
+    return plan_entries
+
+
