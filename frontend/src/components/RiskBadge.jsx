@@ -1,27 +1,49 @@
 import React from 'react';
-import { getStatusBadgeClass } from '../utils/statusHelper';
+import { AlertTriangle, Clock, CheckCircle2 } from 'lucide-react';
 
-export default function RiskBadge({ level = 'LOW' }) {
+export default function RiskBadge({ level = 'LOW', showTooltip = true }) {
   const normalizedLevel = String(level || 'LOW').toUpperCase();
 
   let badgeClass = 'badge-low';
-  if (normalizedLevel === 'CRITICAL') {
-    badgeClass = 'badge-critical';
-  } else if (normalizedLevel === 'HIGH') {
-    badgeClass = 'badge-high';
+  let icon = <CheckCircle2 size={12} strokeWidth={2.5} />;
+  let pulseClass = '';
+  let tooltipText = 'Optimal flow: immediate berth access and low turnaround wait.';
+
+  if (normalizedLevel === 'CRITICAL' || normalizedLevel === 'HIGH') {
+    badgeClass = normalizedLevel === 'CRITICAL' ? 'badge-critical' : 'badge-high';
+    icon = <AlertTriangle size={12} strokeWidth={2.5} />;
+    pulseClass = 'pulse-high';
+    tooltipText = 'High congestion warning: Queue build-up exceeds recommended capacity.';
   } else if (normalizedLevel === 'MEDIUM' || normalizedLevel === 'MED') {
     badgeClass = 'badge-medium';
+    icon = <Clock size={12} strokeWidth={2.5} />;
+    tooltipText = 'Moderate traffic: Resource allocation active to prevent berth bottleneck.';
+  }
+
+  const badgeContent = (
+    <span
+      className={`badge ${badgeClass} ${pulseClass}`}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px',
+        fontWeight: 700,
+        transition: 'all 0.2s ease'
+      }}
+    >
+      {icon}
+      <span>{normalizedLevel}</span>
+    </span>
+  );
+
+  if (!showTooltip) {
+    return badgeContent;
   }
 
   return (
-    <span className={`badge ${badgeClass}`}>
-      <span style={{
-        width: '5px',
-        height: '5px',
-        borderRadius: '50%',
-        backgroundColor: 'currentColor'
-      }} />
-      {normalizedLevel}
-    </span>
+    <div className="tooltip-wrapper">
+      {badgeContent}
+      <span className="tooltip-box">{tooltipText}</span>
+    </div>
   );
 }
